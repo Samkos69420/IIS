@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Animal;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AnimalController extends Controller
 {
@@ -13,7 +14,7 @@ class AnimalController extends Controller
     public function index()
     {
         $animals = Animal::latest()->paginate(10); // Paginate animals
-        return inertia('Animals/Index', [
+        return Inertia::render('Animals/Index', [
             'animals' => $animals,
         ]);
     }
@@ -24,17 +25,18 @@ class AnimalController extends Controller
     public function show($id)
     {
         $animal = Animal::with(['examinationRecords', 'walkPlans'])->findOrFail($id);
-        return inertia('Animals/Show', [
+        return Inertia::render('Animals/Show', [
             'animal' => $animal,
         ]);
     }
 
+  
     /**
      * Add a new animal (for caretakers).
      */
     public function create()
     {
-        return inertia('Animals/Create');
+        return Inertia::render('Animals/Create');
     }
 
     /**
@@ -69,7 +71,7 @@ class AnimalController extends Controller
     public function edit($id)
     {
         $animal = Animal::findOrFail($id);
-        return inertia('Animals/Edit', [
+        return Inertia::render('Animals/Edit', [
             'animal' => $animal,
         ]);
     }
@@ -112,15 +114,19 @@ class AnimalController extends Controller
 
         return redirect()->route('caretaker.animals.index')->with('success', 'Animal deleted successfully.');
     }
+}
+
+
+/*
 
     /**
      * Show the schedule of an animal.
-     */
+     
     public function schedule($id)
     {
         $animal = Animal::with('walkPlans')->findOrFail($id);
 
-        return inertia('Animals/Schedule', [
+        return Inertia::render('Animals/Schedule', [
             'animal' => $animal,
             'schedules' => $animal->walkPlans,
         ]);
@@ -128,14 +134,17 @@ class AnimalController extends Controller
 
     /**
      * Show animal examinations.
-     */
+     
     public function animalExaminations($id)
     {
         $animal = Animal::with('examinationRequests')->findOrFail($id);
 
-        return inertia('Animals/examinationRequests', [
+        return Inertia::render('Animals/examinationRequests', [
             'animal' => $animal,
             'examinations' => $animal->examinationRequests,
         ]);
     }
 }
+
+
+*/

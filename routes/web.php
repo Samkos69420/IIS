@@ -9,6 +9,8 @@ use App\Http\Controllers\VetController;
 use App\Http\Controllers\ExaminationController;
 use App\Http\Controllers\WalkBookingController;
 use App\Http\Controllers\WalkPlanController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ExaminationRecordController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Animal;
@@ -38,94 +40,89 @@ Route::get('/animals/{id}', [AnimalController::class, 'show'])->name('animals.de
 
 
 Route::middleware(['auth', 'role:Admin'])->group( function (){
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin'); //nejakej default adnim dashboard kdyžkat vyčmoudni
-
-    Route::get('/admin/users', [AdminController::class, 'show_users'])->name('adnim');
-    Route::get('/admin/users/{id}', [AdminController::class,'show_detail'])->name('admin');
-    Route::get('/admin/users/{id}/edit',[AdminController::class,'show_edit'])->name('admin');
-    Route::get('/admin/users/create', [AdminController::class,'show_create'])->name('admin');
-    Route::post('/admin/users/create', [AdminController::class, 'create_user'])->name('admin');
-    Route::post('/admin/users/{id}/delete', [AdminController::class, 'remove_user'])->name('admin');
-    Route::post('/admin/users/{id}/edit', [AdminController::class, 'edit_user'])->name('admin');
+    Route::get('/users', [UserController::class, 'show_users'])->name('adnim');
+    Route::get('/users/{id}', [UserController::class,'show_detail'])->name('admin');
+    Route::get('/users/{id}/edit',[UserController::class,'show_edit'])->name('admin');
+    Route::get('/users/create', [UserController::class,'show_create'])->name('admin');
+    Route::post('/users/create', [UserController::class, 'create_user'])->name('admin');
+    Route::post('/users/{id}/delete', [UserController::class, 'remove_user'])->name('admin');
+    Route::post('/users/{id}/edit', [UserController::class, 'edit_user'])->name('admin');
 });
 
 Route::middleware(['auth', 'role:Volunteer,Admin'])->group( function (){
-    Route::get('/volunteer', [VolunteerController::class, 'index'])->name('volunteer'); //nejakej default Volunteer dashboard kdyžkat vyčmoudni
+    Route::get('/volunteer/history', [WalkBookingController::class, 'getVolunteerHistory']); //jeho historie
 
-    Route::get('/volunteer/history', [VolunteerController::class, 'getVolunteerHistory']); //jeho historie
-
-    Route::get('/animals/{id}/schedule-volunteer',[VolunteerController::class, 'showAnimalSchedule']);
-    Route::post('/animals/{id}/bookTermin', [VolunteerController::class, 'bookTermin']);
-    Route::post('/animals/{id}/cancelTermin', [VolunteerController::class, 'cancelTermin']);
+    Route::get('/animals/{id}/schedule-volunteer',[WalkBookingController::class, 'showAnimalSchedule']);
+    Route::post('/animals/{id}/bookTermin', [WalkBookingController::class, 'bookTermin']);
+    Route::post('/animals/{id}/cancelTermin', [WalkBookingController::class, 'cancelTermin']);
 });
 
 Route::middleware(['auth', 'role:Vet,Admin'])->group( function (){
-    Route::get('/vet', [VetController::class, 'getPetExaminationsAndRecords'])->name('vet'); //nejakej default Vet dashboard kdyžkat vyčmoudni
-
+    
     //kouka do požadavku
-    Route::get('/request', [VetController::class, 'IndexRequests']); //seznam requestu na pro lečení zvířat
-    Route::get('/request/{id}', [VetController::class, 'RequestDetail']);
-    Route::get('/request/{id}/edit', [VetController::class,'geteditRequest']);
+    Route::get('/request', [ExaminationRequestController::class, 'index']); //seznam requestu na pro lečení zvířat
+    Route::get('/request/{id}', [ExaminationRequestController::class, 'RequestDetail']);
+    Route::get('/request/{id}/edit', [ExaminationRequestController::class,'geteditRequest']);
 
-    Route::post('/request/{id}/edit', [VetController::class,'editRequest']);
+    Route::post('/request/{id}/edit', [ExaminationRequestController::class,'editRequest']);
 
     //plánuje termíny prohlídek
-    Route::get('/examination', [VetController::class,'IndexExamination']);
-    Route::get('/examination/{id}', [VetController::class,'DetailExamination']);
-    Route::get('/examination/{id}/edit', [VetController::class,'EditDetailExamination']);
-    Route::get('/examination/create', [VetController::class,'CreateFormExamination']);
+    Route::get('/examination', [ExaminationController::class,'IndexExamination']);
+    Route::get('/examination/{id}', [ExaminationController::class,'DetailExamination']);
+    Route::get('/examination/{id}/edit', [ExaminationController::class,'EditDetailExamination']);
+    Route::get('/examination/create', [ExaminationController::class,'CreateFormExamination']);
 
-    Route::post('/examination/create', [VetController::class,'createExamination']);
-    Route::post('/examination/{id}/delete', [VetController::class,'deleteExamination']);
-    Route::post('/examination/{id}/edit', [VetController::class,'editExamination']);
+    Route::post('/examination/create', [ExaminationController::class,'createExamination']);
+    Route::post('/examination/{id}/delete', [ExaminationController::class,'deleteExamination']);
+    Route::post('/examination/{id}/edit', [ExaminationController::class,'editExamination']);
 
     //udržuje zdravotní záznamy zvířat
-    Route::get('/animals/{id}/record', [VetController::class,'IndexAnimalRecords']);
-    Route::get('/animals/{id}/record/{id}', [VetController::class,'DetailAnimalRecord']);
-    Route::get('/animals/{id}/record/{id}/edit', [VetController::class,'geteditDetailAnimalRecord']);
-    Route::get('/animals/{id}/record/create', [VetController::class,'getCreateAnimalRecord']);
+    Route::get('/animals/{id}/record', [ExaminationRecordController::class,'IndexAnimalRecords']);
+    Route::get('/record/{id}', [ExaminationRecordController::class,'DetailAnimalRecord']);
+    Route::get('/record/{id}/edit', [ExaminationRecordController::class,'geteditDetailAnimalRecord']);
+    Route::get('/animals/{id}/record/create', [ExaminationRecordController::class,'getCreateAnimalRecord']);
 
-    Route::post('/animals/{id}/record/create', [VetController::class,'CreateAnimalRecord']);
-    Route::post('/animals/{id}/record/{id}/edit', [VetController::class,'editDetailAnimalRecord']);
-    Route::post('/animals/{id}/record/{id}/delete', [VetController::class,'deleteDetailAnimalRecord']);
+    Route::post('/animals/{id}/record/create', [ExaminationRecordController::class,'CreateAnimalRecord']);
+    Route::post('/record/{id}/edit', [ExaminationRecordController::class,'editDetailAnimalRecord']);
+    Route::post('/record/{id}/delete', [ExaminationRecordController::class,'deleteDetailAnimalRecord']);
 });
 
 Route::middleware(['auth', 'role:Caretaker,Admin'])->group( function (){
 
 
     //spravuje zvířata, vede jejich evidenci
-    Route::get('/animals/{id}/edit', [CaretakerController::class,'getAnimalEdit']);
-    Route::get('/animals/create', [CaretakerController::class,'getAnimalCreate']);
+    Route::get('/animals/{id}/edit', [AnimalController::class,'edit']);
+    Route::get('/animals/create', [AnimalController::class,'create']);
 
-    Route::post('/animals/create', [CaretakerController::class,'AnimalCreate']);
-    Route::post('/animals/{id}/edit', [CaretakerController::class,'AnimalEdit']);
-    Route::post('/animals/{id}/delete', [CaretakerController::class, 'AnimalDelete']);
+    Route::post('/animals/create', [AnimalController::class,'store']);
+    Route::post('/animals/{id}/edit', [AnimalController::class,'update']);
+    Route::post('/animals/{id}/delete', [AnimalController::class, 'destroy']);
 
     //vytváří rozvrhy pro venčení
-    Route::get('/animals/{id}/planWalks',[CaretakerController::class, 'getAnimalPlan']);
-    Route::post( '/animals/{id}/planWalks',[CaretakerController::class, 'getAnimalPlan']);
+    Route::get('/animals/{id}/planWalks',[WalkBookingController::class, 'getAnimalPlan']);
+    Route::post( '/animals/{id}/planWalks',[WalkBookingController::class, 'getAnimalPlan']);
 
     //ověřuje dobrovolníky
-    Route::get('/approvevolunteers', [CaretakerController::class,'getApproveVolunteers']);
-    Route::get('/approvevolunteers/{id}', [CaretakerController::class,'getApproveVolunteersDetail']);
-    Route::post('/approvevolunteers/{id}/approve', [CaretakerController::class,'ApproveVolunteer']);
+    Route::get('/approvevolunteers', [UserController::class,'getApproveVolunteers']);
+    Route::get('/approvevolunteers/{id}', [UserController::class,'getApproveVolunteersDetail']);
+    Route::post('/approvevolunteers/{id}/approve', [UserController::class,'ApproveVolunteer']);
 
 
     //schvaluje rezervace zvířat na venčení
-    Route::get('/booking',[CaretakerController::class,'Index']); //all boookings
-    Route::get('animals/{id}/booking',[CaretakerController::class,'AnimalIndex']);
-    Route::get('/booking/{id}', [CaretakerController::class,'Detail']);
-    Route::post('/booking/{id}/approve',[CaretakerController::class,'ApproveBooking']);
-    Route::post('/booking/{id}/decline',[CaretakerController::class,'DeclineBooking']); 
+    Route::get('/booking',[WalkBookingController::class,'Index']); //all boookings
+    Route::get('animals/{id}/booking',[WalkBookingController::class,'AnimalIndex']);
+    Route::get('/booking/{id}', [WalkBookingController::class,'Detail']);
+    Route::post('/booking/{id}/approve',[WalkBookingController::class,'ApproveBooking']);
+    Route::post('/booking/{id}/decline',[WalkBookingController::class,'DeclineBooking']); 
 
 
     //eviduje zapůjčení a vrácení
-    Route::post('animals/{id}/taken',[CaretakerController::class,'animalTaken']);
-    Route::post('animals/{id}/returned',[CaretakerController::class,'animalReturned']);
+    Route::post('animals/{id}/taken',[AnimalController::class,'animalTaken']);
+    Route::post('animals/{id}/returned',[AnimalController::class,'animalReturned']);
 
     //vytváří požadavky na veterináře
-    Route::get('animals/{id}/createrequest',[CaretakerController::class,'getCreateAnimal']);
-    Route::post('animals/{id}/createrequest',[CaretakerController::class,'CreateAnimal']);
+    Route::get('animals/{id}/createrequest',[ExaminationRequestController::class,'create']);
+    Route::post('animals/createrequest',[ExaminationRequestController::class,'store']);
 });
 
 
