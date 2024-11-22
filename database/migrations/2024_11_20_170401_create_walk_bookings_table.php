@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('walk_bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('walk_id')->constrained('walk_plans')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->nullable();
+            $table->foreignId('animal_id')->constrained('animals')->cascadeOnDelete();
+            $table->dateTime('start');
+            $table->dateTime('end');
             $table->enum('status', ['pending','rejected','accepted'])->default('pending');
             $table->dateTime('booking_date');
+            $table->boolean('available')->default(true);
+            $table->boolean('approved')->default(false);
             $table->timestamps();
         });
     }

@@ -6,6 +6,7 @@ use App\Models\Animal;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+
 class AnimalController extends Controller
 {
     /**

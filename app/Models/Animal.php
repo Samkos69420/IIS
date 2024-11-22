@@ -30,8 +30,4 @@ class Animal extends Model
         return $this->hasMany(examination_record::class);
     }
 
-    public function walkPlans()
-    {
-        return $this->hasMany(walk_plan::class);
-    }
 }

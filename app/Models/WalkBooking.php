@@ -5,24 +5,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class walk_booking extends Model
+class WalkBooking extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'walk_id',
-        'approved',
+        'animal_id',
+        'start',
+        'end',
+        'status',
         'booking_date',
+        'available',
+        'approved',
     ];
 
+    /**
+     * Relationships
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function walkPlan()
+    public function animal()
     {
-        return $this->belongsTo(walk_plan::class, 'walk_id');
+        return $this->belongsTo(Animal::class);
     }
 }
+

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\examination_request;
+use app\Models\Animal;
+use app\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+
 
 class ExaminationRequestController extends Controller
 {
@@ -14,7 +17,7 @@ class ExaminationRequestController extends Controller
     public function index()
     {
         // Get paginated list of examination requests with relationships
-        $examination_requests = ExaminationRequest::with(['animal', 'vet'])
+        $examination_requests = examination_request::with(['animal', 'vet'])
             ->latest()
             ->paginate(10);
 
@@ -51,14 +54,14 @@ class ExaminationRequestController extends Controller
         ]);
 
         // Create a new examination request
-        ExaminationRequest::create($validated);
+        examination_request::create($validated);
 
         // Redirect with a success message
         return redirect()->route('examination-requests.index')
             ->with('success', 'Examination request created successfully.');
     }
 
-    public function show(ExaminationRequest $examination_request)
+    public function show(examination_request $examination_request)
     {
         // Load related data
         $examination_request->load(['animal', 'vet']);
@@ -72,7 +75,7 @@ class ExaminationRequestController extends Controller
     public function RequestDetail($id)
     {
         // Fetch the examination request with relationships
-        $examination_request = ExaminationRequest::with(['animal', 'vet'])->findOrFail($id);
+        $examination_request = examination_request::with(['animal', 'vet'])->findOrFail($id);
 
         // Return as JSON or to a detail view
         return Inertia::render('ExaminationRequest/Detail', [
@@ -87,7 +90,7 @@ class ExaminationRequestController extends Controller
     public function geteditRequest($id)
     {
         // Fetch the examination request with related data
-        $examination_request = ExaminationRequest::findOrFail($id);
+        $examination_request = examination_request::findOrFail($id);
         $animals = Animal::all(['id', 'name']);
         $vets = User::where('role', 'vet')->get(['id', 'name']);
 
@@ -114,7 +117,7 @@ class ExaminationRequestController extends Controller
         ]);
 
         // Fetch and update the examination request
-        $examination_request = ExaminationRequest::findOrFail($id);
+        $examination_request = examination_request::findOrFail($id);
         $examination_request->update($validated);
 
         // Redirect with a success message

@@ -3,66 +3,89 @@
 namespace App\Http\Controllers;
 
 use App\Models\examination;
+use App\Models\examination_request;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ExaminationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // Show list of all examinations
+    public function IndexExamination()
     {
-        $examination = Examination::orderBy("created_at","desc")->paginate(10);
-        return inertia('Examination/Index',[
-            'exsaminations'=> $examination
+        $examinations = examination::with('examinationRequest')->get();
+        return Inertia::render('Examinations/Index', [
+            'examinations' => $examinations,
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Show the details of a specific examination
+    public function DetailExamination($id)
     {
-        return inertia('Examination/Create');
+        $examination = examination::with('examinationRequest')->findOrFail($id);
+        return Inertia::render('Examinations/Detail', [
+            'examination' => $examination,
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // Show the form to edit an existing examination
+    public function EditDetailExamination($id)
     {
-        
+        $examination = examination::findOrFail($id);
+        $examinationRequests = examination_request::all();
+        return Inertia::render('Examinations/Edit', [
+            'examination' => $examination,
+            'examinationRequests' => $examinationRequests,
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(examination $examination)
+    // Show the form to create a new examination
+    public function CreateFormExamination()
     {
-        //
+        $examinationRequests = examination_request::all();
+        return Inertia::render('Examinations/Create', [
+            'examinationRequests' => $examinationRequests,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(examination $examination)
+    // Store a new examination
+    public function createExamination(Request $request)
     {
-        //
+        $request->validate([
+            'request_id' => 'required|exists:examination_requests,id',
+            'examination' => 'required|date',
+        ]);
+
+        examination::create([
+            'request_id' => $request->request_id,
+            'examination' => $request->examination,
+        ]);
+
+        return redirect()->route('examination.index');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, examination $examination)
+    // Delete an examination
+    public function deleteExamination($id)
     {
-        //
+        $examination = examination::findOrFail($id);
+        $examination->delete();
+
+        return redirect()->route('examination.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(examination $examination)
+    // Update an examination
+    public function editExamination(Request $request, $id)
     {
-        //
+        $request->validate([
+            'request_id' => 'required|exists:examination_requests,id',
+            'examination' => 'required|date',
+        ]);
+
+        $examination = examination::findOrFail($id);
+        $examination->update([
+            'request_id' => $request->request_id,
+            'examination' => $request->examination,
+        ]);
+
+        return redirect()->route('examination.index');
     }
 }

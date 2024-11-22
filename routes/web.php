@@ -7,6 +7,7 @@ use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\CaretakerController;
 use App\Http\Controllers\VetController;
 use App\Http\Controllers\ExaminationController;
+use App\Http\Controllers\ExaminationRequestController;
 use App\Http\Controllers\WalkBookingController;
 use App\Http\Controllers\WalkPlanController;
 use App\Http\Controllers\UserController;
@@ -33,6 +34,7 @@ Route::get('/', function () {
         'animals' => Animal::take(4)->get(),
     ]);
 });
+
 
 Route::get('/animals', [AnimalController::class, 'index'])->name('animals.list');
 Route::get('/animals/{id}', [AnimalController::class, 'show'])->name('animals.detail');
@@ -67,7 +69,7 @@ Route::middleware(['auth', 'role:Vet,Admin'])->group( function (){
     Route::post('/request/{id}/edit', [ExaminationRequestController::class,'editRequest']);
 
     //plánuje termíny prohlídek
-    Route::get('/examination', [ExaminationController::class,'IndexExamination']);
+    Route::get('/examination', [ExaminationController::class,'IndexExamination'])->name('examination.index');
     Route::get('/examination/{id}', [ExaminationController::class,'DetailExamination']);
     Route::get('/examination/{id}/edit', [ExaminationController::class,'EditDetailExamination']);
     Route::get('/examination/create', [ExaminationController::class,'CreateFormExamination']);
@@ -77,14 +79,14 @@ Route::middleware(['auth', 'role:Vet,Admin'])->group( function (){
     Route::post('/examination/{id}/edit', [ExaminationController::class,'editExamination']);
 
     //udržuje zdravotní záznamy zvířat
-    Route::get('/animals/{id}/record', [ExaminationRecordController::class,'IndexAnimalRecords']);
-    Route::get('/record/{id}', [ExaminationRecordController::class,'DetailAnimalRecord']);
-    Route::get('/record/{id}/edit', [ExaminationRecordController::class,'geteditDetailAnimalRecord']);
-    Route::get('/animals/{id}/record/create', [ExaminationRecordController::class,'getCreateAnimalRecord']);
-
-    Route::post('/animals/{id}/record/create', [ExaminationRecordController::class,'CreateAnimalRecord']);
-    Route::post('/record/{id}/edit', [ExaminationRecordController::class,'editDetailAnimalRecord']);
-    Route::post('/record/{id}/delete', [ExaminationRecordController::class,'deleteDetailAnimalRecord']);
+    Route::get('/animals/{id}/record', [ExaminationRecordController::class, 'IndexAnimalRecords'])->name('animals.record');
+    Route::get('/record/{id}', [ExaminationRecordController::class, 'DetailAnimalRecord']);
+    Route::get('/record/{id}/edit', [ExaminationRecordController::class, 'getEditDetailAnimalRecord']);
+    Route::get('/animals/{id}/record/create', [ExaminationRecordController::class, 'getCreateAnimalRecord']);
+    
+    Route::post('/animals/{id}/record/create', [ExaminationRecordController::class, 'createAnimalRecord']);
+    Route::post('/record/{id}/edit', [ExaminationRecordController::class, 'editDetailAnimalRecord']);
+    Route::post('/record/{id}/delete', [ExaminationRecordController::class, 'deleteDetailAnimalRecord']);
 });
 
 Route::middleware(['auth', 'role:Caretaker,Admin'])->group( function (){
@@ -100,7 +102,7 @@ Route::middleware(['auth', 'role:Caretaker,Admin'])->group( function (){
 
     //vytváří rozvrhy pro venčení
     Route::get('/animals/{id}/planWalks',[WalkBookingController::class, 'getAnimalPlan']);
-    Route::post( '/animals/{id}/planWalks',[WalkBookingController::class, 'getAnimalPlan']);
+    Route::post( '/animals/{id}/planWalks',[WalkBookingController::class, 'postAnimalPlan']);
 
     //ověřuje dobrovolníky
     Route::get('/approvevolunteers', [UserController::class,'getApproveVolunteers']);
