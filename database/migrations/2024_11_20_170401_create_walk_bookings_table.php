@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('walk_id')->constrained('walk_plans')->cascadeOnDelete();
-            $table->boolean('approved')->default(false);
+            $table->enum('status', ['pending','rejected','accepted'])->default('pending');
             $table->dateTime('booking_date');
             $table->timestamps();
         });
