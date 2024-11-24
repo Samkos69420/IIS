@@ -50,7 +50,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'role' => 'required|string|in:CareTaker,Vet,Volunteer,None',
+            'role' => 'required|string|in:CareTaker,Vet,Volunteer,pendingVolunteer,None',
         ]);
 
         $user = User::create([
@@ -91,7 +91,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8',
-            'role' => 'required|string|in:CareTaker,Vet,Volunteer,None'
+            'role' => 'required|string|in:CareTaker,Vet,Volunteer,pendingVolunteer,None'
         ]);
 
         if ($validated['role'] == 'None') {
@@ -125,7 +125,7 @@ class UserController extends Controller
      */
     public function getApproveVolunteers()
     {
-        $volunteers = User::doesntHave('roles')->get();
+        $volunteers = User::role('pandingVolunteer')->get();
 
         return Inertia::render('Volunteers/Approve', [
             'volunteers' => $volunteers,
@@ -151,9 +151,46 @@ class UserController extends Controller
     {
         $volunteer = User::findOrFail($id);
 
-        $volunteer->assignRole('Volunteer');
+        if ($volunteer->hasRole('pendingVolunteer')) {
+            $volunteer->syncRoles(['Volunteer']);
+
+            return redirect()->route('approvevolunteers')
+                ->with('success', 'Volunteer approved successfully.');
+        }
 
         return redirect()->route('approvevolunteers')
-            ->with('success', 'Volunteer approved successfully.');
+            ->with('error', 'User does not have the pendingVolunteer role and cannot be approved.');
     }
+    /**
+     * Deny a specific volunteer.
+     */
+    public function DenyVolunteer(Request $request, $id){
+        $volunteer = User::findOrFail($id);
+
+        if ($volunteer->hasRole('pendingVolunteer')) {
+            $volunteer->syncRoles(['Volunteer']);
+
+            return redirect()->route('approvevolunteers')
+                ->with('success', 'Volunteer denied successfully.');
+        }
+
+        return redirect()->route('approvevolunteers')
+            ->with('error', 'User does not have the pendingVolunteer role and cannot be denied.');
+
+    }
+
+    public function applyForApproval(Request $request)
+    {
+        // Check if the user has any roles
+        if (!$request->user()->hasAnyRole()) {
+            // Assign the role 'pendingVolunteer' to the user
+            $request->user()->assignRole('pendingVolunteer');
+    
+            return redirect()->route('animals.list')->with('success', 'You applyed successfully!');
+        }
+    
+        return redirect()->route('animals.list')->with('error', 'You cant apply!');
+    }
+    
+
 }

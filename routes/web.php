@@ -39,7 +39,7 @@ Route::get('/', function () {
 Route::get('/animals', [AnimalController::class, 'index'])->name('animals.list');
 Route::get('/animals/{id}', [AnimalController::class, 'show'])->name('animals.detail')->where('id', '[0-9]+');
 
-
+Route::post('/apply', [UserController::class,'applyForApproval'])->middleware('auth'); //user žádá o potvrzení
 
 Route::middleware(['auth', 'role:Admin'])->group( function (){
     Route::get('/users', [UserController::class, 'show_users'])->name('adnim');
@@ -108,7 +108,7 @@ Route::middleware(['auth', 'role:CareTaker|Admin'])->group( function (){
     Route::get('/approvevolunteers', [UserController::class,'getApproveVolunteers']);
     Route::get('/approvevolunteers/{id}', [UserController::class,'getApproveVolunteersDetail'])->where('id', '[0-9]+');
     Route::post('/approvevolunteers/{id}/approve', [UserController::class,'ApproveVolunteer'])->where('id', '[0-9]+');
-
+    Route::post('/approvevolunteers/{id}/deny', [UserController::class,'DenyVolunteer'])->where('id', '[0-9]+');
 
     //schvaluje rezervace zvířat na venčení
     Route::get('/booking',[WalkBookingController::class,'Index']); //all boookings

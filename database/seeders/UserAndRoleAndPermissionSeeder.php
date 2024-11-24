@@ -20,6 +20,7 @@ class UserAndRoleAndPermissionSeeder extends Seeder
         $careTakerRole = Role::create(['name' => 'CareTaker']);
         $vetRole = Role::create(['name' => 'Vet']);
         $volunteerRole = Role::create(['name' => 'Volunteer']);
+        Role::create(['name'=> 'pandingVolunteer']);
 
         // Create Permission
         //admin
