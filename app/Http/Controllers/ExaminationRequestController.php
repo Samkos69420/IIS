@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\examination_request;
-use app\Models\Animal;
-use app\Models\User;
+use App\Models\Animal;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -29,12 +29,11 @@ class ExaminationRequestController extends Controller
 
     public function create($id)
     {
-        // Fetch necessary data for the form (animals and vets)
-        $animals = Animal::all(['id', 'name']);
-        $vets = User::where('role', 'vet')->get(['id', 'name']);
+        $animal = Animal::findOrFail($id);
+        $vets = User::role('vet')->get();
 
         return Inertia::render('ExaminationRequest/Create', [
-            'animals' => $animals,
+            'animals' => $animal,
             'vets' => $vets,
             'animal_id' => $id,
         ]);
@@ -57,8 +56,7 @@ class ExaminationRequestController extends Controller
         examination_request::create($validated);
 
         // Redirect with a success message
-        return redirect()->route('examination-requests.index')
-            ->with('success', 'Examination request created successfully.');
+        return response()->json(['success' => true, 'message' => 'Examination request created successfully.']);
     }
 
     public function show(examination_request $examination_request)

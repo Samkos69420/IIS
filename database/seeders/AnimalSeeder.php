@@ -14,9 +14,11 @@ class AnimalSeeder extends Seeder
     {
         DB::table('animals')->insert([
             [
-                'name' => 'Buddy',
-                'kind' => 'pes',
+                'name' => 'Alík',
+                'breed' => 'labrador',
                 'age' => 3,
+                'weight'=> 25.4,
+                'neutered' => false,
                 'gender' => 'male',
                 'description' => 'Friendly and playful.',
                 'date_found' => '2024-01-15',
@@ -26,9 +28,11 @@ class AnimalSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Whiskers',
-                'kind' => 'kočka',
-                'age' => 2,
+                'name' => 'Punťa',
+                'breed' => 'jezevčík',
+                'age' => 5,
+                'weight'=> 5.4,
+                'neutered' => false,
                 'gender' => 'female',
                 'description' => 'Shy but loves cuddles.',
                 'date_found' => '2024-02-10',
@@ -38,9 +42,11 @@ class AnimalSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Thumper',
-                'kind' => 'králík',
-                'age' => 1,
+                'name' => 'Buddy',
+                'breed' => 'dalmatín',
+                'age' => 8,
+                'weight'=> 15.4,
+                'neutered' => true,
                 'gender' => 'male',
                 'description' => 'Energetic and loves carrots.',
                 'date_found' => '2024-03-05',

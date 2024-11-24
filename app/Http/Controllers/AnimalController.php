@@ -14,9 +14,9 @@ class AnimalController extends Controller
      */
     public function index()
     {
-        $animals = Animal::latest()->paginate(10); // Paginate animals
+        $animals = Animal::paginate(10); // Paginate animals
         return Inertia::render('Animals/Index', [
-            'animals' => $animals,
+            'initialAnimals' => $animals->items(),
         ]);
     }
 
@@ -25,7 +25,7 @@ class AnimalController extends Controller
      */
     public function show($id)
     {
-        $animal = Animal::with(['examinationRecords', 'walkPlans'])->findOrFail($id);
+        $animal = Animal::with(['examinationRecords', 'WalkBookings'])->findOrFail($id);
         return Inertia::render('Animals/Show', [
             'animal' => $animal,
         ]);
@@ -37,7 +37,7 @@ class AnimalController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Animals/Create');
+        return Inertia::render('Animals/Index');
     }
 
     /**
@@ -46,14 +46,16 @@ class AnimalController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'photo_url' => 'required|url', // Assuming photo_url is a URL in your schema
             'name' => 'required|string|max:255', 
-            'kind' => 'required|string|in:dog,cat,rabbit', 
+            'breed' => 'nullable|string|max:255', 
             'age' => 'required|integer|min:0|max:30', 
+            'weight' => 'required|numeric|min:0|max:200', // Adjust max weight as needed
+            'neutered' => 'required|boolean', 
             'gender' => 'required|in:male,female', 
             'description' => 'nullable|string|max:1000', 
             'date_found' => 'required|date|before_or_equal:today', 
-            'where_found' => 'required|string|max:255', 
-            'photo' => 'nullable|image|max:2048', 
+            'where_found' => 'required|string|max:255',
         ]);
 
         $animal = Animal::create($validated);
@@ -85,24 +87,26 @@ class AnimalController extends Controller
         $animal = Animal::findOrFail($id);
 
         $validated = $request->validate([
+            'photo_url' => 'required|url',
             'name' => 'required|string|max:255', 
-            'kind' => 'required|string|in:dog,cat,rabbit', 
+            'breed' => 'nullable|string|max:255', 
             'age' => 'required|integer|min:0|max:30', 
+            'weight' => 'required|numeric|min:0|max:200',
+            'neutered' => 'required|boolean', 
             'gender' => 'required|in:male,female', 
             'description' => 'nullable|string|max:1000', 
             'date_found' => 'required|date|before_or_equal:today', 
-            'where_found' => 'required|string|max:255', 
-            'photo' => 'nullable|image|max:2048', 
+            'where_found' => 'required|string|max:255',
         ]);
 
         $animal->update($validated);
 
         if ($request->hasFile('photo')) {
-            $animal->photo = $request->file('photo')->store('animals', 'public');
+            $animal->photo_url = $request->file('photo')->store('animals', 'public');
             $animal->save();
         }
 
-        return redirect()->route('caretaker.animals.index')->with('success', 'Animal updated successfully.');
+        return response()->json(['success' => true, 'message' => 'Animal updated successfully.']);
     }
 
     /**
@@ -113,39 +117,6 @@ class AnimalController extends Controller
         $animal = Animal::findOrFail($id);
         $animal->delete();
 
-        return redirect()->route('caretaker.animals.index')->with('success', 'Animal deleted successfully.');
+        return response()->json(['success' => true, 'message' => 'Animal deleted successfully.']);
     }
 }
-
-
-/*
-
-    /**
-     * Show the schedule of an animal.
-     
-    public function schedule($id)
-    {
-        $animal = Animal::with('walkPlans')->findOrFail($id);
-
-        return Inertia::render('Animals/Schedule', [
-            'animal' => $animal,
-            'schedules' => $animal->walkPlans,
-        ]);
-    }
-
-    /**
-     * Show animal examinations.
-     
-    public function animalExaminations($id)
-    {
-        $animal = Animal::with('examinationRequests')->findOrFail($id);
-
-        return Inertia::render('Animals/examinationRequests', [
-            'animal' => $animal,
-            'examinations' => $animal->examinationRequests,
-        ]);
-    }
-}
-
-
-*/

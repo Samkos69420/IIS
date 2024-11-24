@@ -60,7 +60,7 @@ class ExaminationRecordController extends Controller
     public function getCreateAnimalRecord($id)
     {
         $animal = Animal::findOrFail($id);
-        $vets = User::where('role', 'vet')->get();
+        $vets = User::role('vet')->get();
 
         return Inertia::render('AnimalRecords/Create', [
             'animal' => $animal,
@@ -76,10 +76,13 @@ class ExaminationRecordController extends Controller
     {
         $validated = $request->validate([
             'vet_id' => 'required|exists:users,id',
-            'examination_date' => 'required|date',
+            'examination_date' => 'required|date', 
+            'examination_time' => 'required|date_format:H:i', 
             'examination_type' => 'required|in:ockovani,prohlidka,lecba',
             'description' => 'nullable|string',
         ]);
+
+        $validated['examination_date'] = $request->examination_date . ' ' . $request->examination_time;
 
         $validated['animal_id'] = $id;
 

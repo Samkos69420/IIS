@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -15,10 +16,10 @@ class UserController extends Controller
      */
     public function show_users()
     {
-        $users = User::all(); // Fetch all users
+        $users = User::all();
         return Inertia::render('Users/Index', [
             'users' => $users,
-        ]); // Assuming you have a Vue component at 'Users/Index'
+        ]); 
     }
 
     /**
@@ -26,10 +27,10 @@ class UserController extends Controller
      */
     public function show_detail($id)
     {
-        $user = User::findOrFail($id); // Find user or return 404
+        $user = User::findOrFail($id);
         return Inertia::render('Users/Show', [
             'user' => $user,
-        ]); // Assuming you have a Vue component at 'Users/Show'
+        ]);
     }
 
     /**
@@ -37,7 +38,7 @@ class UserController extends Controller
      */
     public function show_create()
     {
-        return Inertia::render('Users/Create'); // Assuming you have a Vue component at 'Users/Create'
+        return Inertia::render('Users/Create');
     }
 
     /**
@@ -49,13 +50,21 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
+            'role' => 'required|string|in:CareTaker,Vet,Volunteer,None',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
+
+
+        if ($validated['role'] == 'None') {
+            $user->syncRoles([]);
+        }else {
+            $user->assignRole($validated['role']);
+        }
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
@@ -65,10 +74,10 @@ class UserController extends Controller
      */
     public function show_edit($id)
     {
-        $user = User::findOrFail($id); // Find user or return 404
+        $user = User::findOrFail($id); 
         return Inertia::render('Users/Edit', [
             'user' => $user,
-        ]); // Assuming you have a Vue component at 'Users/Edit'
+        ]);
     }
 
     /**
@@ -82,7 +91,14 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8',
+            'role' => 'required|string|in:CareTaker,Vet,Volunteer,None'
         ]);
+
+        if ($validated['role'] == 'None') {
+            $user->syncRoles([]);
+        }else {
+            $user->assignRole($validated['role']);
+        }
 
         $user->update([
             'name' => $validated['name'],
@@ -109,7 +125,7 @@ class UserController extends Controller
      */
     public function getApproveVolunteers()
     {
-        $volunteers = User::role('Volunteer')->where('is_approved', false)->get();
+        $volunteers = User::doesntHave('roles')->get();
 
         return Inertia::render('Volunteers/Approve', [
             'volunteers' => $volunteers,
@@ -135,7 +151,7 @@ class UserController extends Controller
     {
         $volunteer = User::findOrFail($id);
 
-        $volunteer->update(['is_approved' => true]);
+        $volunteer->assignRole('Volunteer');
 
         return redirect()->route('approvevolunteers')
             ->with('success', 'Volunteer approved successfully.');

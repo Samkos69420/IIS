@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('animals', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('kind'); // 'pes', 'kočka', 'králík'
+            $table->string('breed')->nullable();
             $table->integer('age');
+            $table->unsignedFloat('weight');
+            $table->boolean('neutered');
             $table->enum('gender', ['male', 'female']);
             $table->string('description')->nullable();
             $table->date('date_found');

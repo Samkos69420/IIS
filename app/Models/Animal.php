@@ -11,8 +11,10 @@ class Animal extends Model
 
     protected $fillable = [
         'name',
-        'kind',
+        'breed',
         'age',
+        'weight',
+        'neutered',
         'gender',
         'description',
         'date_found',
@@ -30,4 +32,8 @@ class Animal extends Model
         return $this->hasMany(examination_record::class);
     }
 
+    public function WalkBookings()
+    {
+        return $this->hasMany(WalkBooking::class);
+    }
 }
