@@ -137,6 +137,6 @@ class ExaminationRequestController extends Controller
      */
     public function destroy(examination_request $examination_request)
     {
-        //
+        
     }
 }
