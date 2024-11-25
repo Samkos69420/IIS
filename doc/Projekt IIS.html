@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-2"/>
+    <title>Projekt IIS</title>
+    <style type="text/css">
+    	table { border-collapse: collapse; }
+    	td, th { border: 1px solid black; padding: 0.3em 0.5em; text-align: left; }
+    	dt { font-weight: bold; margin-top: 0.5em; }
+    </style>
+</head>
+<body>
+
+<!-- Zkontrolujte prosím nastavení kódování v hlavičce dokumentu 
+     podle použitého editoru -->
+
+<h1>Název zadání (editujte)</h1> <!-- Nahradte názvem svého zadání -->
+
+<dl>
+	<dt>Autoři</dt>
+	<dd>První jméno <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xsamek10@stud.fit.vutbr.cz">xsamek10@stud.fit.vutbr.cz</a> -
+		popis činnosti v týmu
+	</dd>
+	<dd>Druhé jméno <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xstude27@stud.fit.vutbr.cz">xstude27@stud.fit.vutbr.cz</a> - 
+		popis činnosti v týmu
+	</dd>
+  <dd>Třetí jméno <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xlibra02@stud.fit.vutbr.cz">xlibra02@stud.fit.vutbr.cz</a> - 
+		popis činnosti v týmu
+	</dd>
+	<dt>URL aplikace</dt>
+	<dd><a href="http://www.stud.fit.vutbr.cz/~xautor01/IIS">http://www.stud.fit.vutbr.cz/~xautor01/IIS</a></dd>
+	<dd>(pokud má aplikace více vstupních stránek, napište obdobně další URL)</dd>
+</dl>
+
+<h2>Uživatelé systému pro testování</h2>
+<p>Uveďte prosím existující zástupce <strong>všech rolí uživatelů</strong>.</p>
+<table>
+<tr><th>Login</th><th>Heslo</th><th>Role</th></tr>
+<tr><td>admin</td><td>admin</td><td>Administrátor</td></tr>
+<tr><td>prodavac</td><td>prodavac</td><td>Prodavač</td></tr>
+<tr><td>franta</td><td>franta</td><td>Zákazník</td></tr>
+</table>
+
+<p>(Diagram případů užití není nutné vkládat, pokud IS implementuje role a případy užití definované zadáním.)</p> 
+
+<h3>Video</h3>
+
+<p>Přiložte odkaz na komentované video demostrující použití informačního systému. Zaměřte se na případy užití definované zadáním (např. registrace uživatele, správa uživatelů a činnosti jednotlivých rolí). Video nahrajte například na VUT Google Drive, kde ho bude možné přímo spustit z odkazu.</p> 
+
+<h2>Implementace</h2>
+
+<h3>AnimalController.php</h3>
+<p><strong>Popis:</strong> Zpracovává operace spojené se zvířaty.</p>
+
+<h4>Funkce:</h4>
+<ul>
+    <li><strong>index</strong> - Zobrazuje stránkovaný seznam všech zvířat.</li>
+    <li><strong>show</strong> - Zobrazuje detaily konkrétního zvířete, včetně vyšetření a plánů venčení.</li>
+    <li><strong>create</strong> - Poskytuje formulář pro přidání nového zvířete.</li>
+    <li><strong>store</strong> - Ukládá nové zvíře do databáze s možností nahrání fotografie.</li>
+    <li><strong>edit</strong> - Poskytuje formulář pro úpravu existujícího zvířete.</li>
+    <li><strong>update</strong> - Aktualizuje existující záznam zvířete v databázi s možností nahrání nové fotografie.</li>
+    <li><strong>destroy</strong> - Maže záznam zvířete z databáze.</li>
+    <li><strong>schedule</strong> - Zobrazuje rozvrh (plány venčení) pro konkrétní zvíře.</li>
+    <li><strong>animalExaminations</strong> - Zobrazuje záznamy o vyšetřeních konkrétního zvířete.</li>
+</ul>
+<br>    
+
+<h3>ExaminationController.php</h3>
+<p><strong>Popis:</strong> Zpracovává operace spojené s veterinárními vyšetřeními.</p>
+
+<h4>Funkce:</h4>
+<ul>
+    <li><strong>IndexExamination</strong> - Zobrazuje seznam všech vyšetření spolu s příslušnými žádostmi.</li>
+    <li><strong>DetailExamination</strong> - Zobrazuje detaily konkrétního vyšetření.</li>
+    <li><strong>EditDetailExamination</strong> -  Poskytuje formulář pro úpravu existujícího vyšetření.</li>
+    <li><strong>CreateFormExamination</strong> - Poskytuje formulář pro vytvoření nového vyšetření.</li>
+    <li><strong>createExamination</strong> - Ukládá nové vyšetření do databáze.</li>
+    <li><strong>deleteExamination</strong> - Maže konkrétní vyšetření z databáze.</li>
+    <li><strong>editExamination</strong> - Aktualizuje detaily existujícího vyšetření v databázi.</li>
+</ul>
+<br>
+<h3>ExaminationRecordController.php</h3>
+<p><strong>Popis:</strong> Zpracovává záznamy z veterinárních vyšetření zvířat.</p>
+
+<h4>Funkce:</h4>
+<ul>
+    <li><strong>IndexAnimalRecords</strong> - Zobrazuje seznam záznamů pro konkrétní zvíře.</li>
+    <li><strong>DetailAnimalRecord</strong> - Zobrazuje detaily konkrétního záznamu z vyšetření.</li>
+    <li><strong>getEditDetailAnimalRecord</strong> - Poskytuje formulář pro úpravu existujícího záznamu.</li>
+    <li><strong>getCreateAnimalRecord</strong> - Poskytuje formulář pro vytvoření nového záznamu vyšetření pro zvíře.</li>
+    <li><strong>createAnimalRecord</strong> - Ukládá nový záznam vyšetření pro zvíře do databáze.</li>
+    <li><strong>editDetailAnimalRecord</strong> - Aktualizuje existující záznam vyšetření.</li>
+    <li><strong>deleteDetailAnimalRecord</strong> - Maže konkrétní záznam z databáze.</li>
+</ul>
+<br>
+<h3>ExaminationRequestController.php</h3>
+<p><strong>Popis:</strong> Zpracovává žádosti o veterinární vyšetření zvířat.</p>
+
+<h4>Funkce:</h4>
+<ul>
+    <li><strong>index</strong> - Zobrazuje stránkovaný seznam žádostí o vyšetření.</li>
+    <li><strong>create</strong> - Poskytuje formulář pro vytvoření nové žádosti o vyšetření.</li>
+    <li><strong>store</strong> - Ukládá novou žádost o vyšetření do databáze.</li>
+    <li><strong>show</strong> - Zobrazuje detaily konkrétní žádosti o vyšetření.</li>
+    <li><strong>RequestDetail</strong> - Zobrazuje podrobné informace o žádosti včetně vztahů.</li>
+    <li><strong>geteditRequest</strong> - Poskytuje formulář pro úpravu existující žádosti.</li>
+    <li><strong>editRequest</strong> - Aktualizuje informace o konkrétní žádosti v databázi.</li>
+    <li><strong>update</strong> - Rezervováno pro budoucí aktualizace (není implementováno).</li>
+    <li><strong>destroy</strong> - Rezervováno pro mazání (není implementováno).</li>
+</ul>
+<br>
+<h3>UserController.php</h3>
+<p><strong>Popis:</strong> Zpracovává operace spojené se správou uživatelů a dobrovolníků.</p>
+
+<h4>Funkce:</h4>
+<ul>
+    <li><strong>show_users</strong> - Zobrazuje seznam všech uživatelů.</li>
+    <li><strong>show_detail</strong> - Zobrazuje detail konkrétního uživatele.</li>
+    <li><strong>show_create</strong> - Poskytuje formulář pro vytvoření nového uživatele.</li>
+    <li><strong>create_user</strong> - Ukládá nového uživatele do databáze.</li>
+    <li><strong>show_edit</strong> - Poskytuje formulář pro úpravu existujícího uživatele.</li>
+    <li><strong>edit_user</strong> - Aktualizuje informace o konkrétním uživateli v databázi.</li>
+    <li><strong>remove_user</strong> - Maže uživatele z databáze.</li>
+    <li><strong>getApproveVolunteers</strong> - Zobrazuje seznam dobrovolníků čekajících na schválení.</li>
+    <li><strong>getApproveVolunteersDetail</strong> - Zobrazuje detaily konkrétního dobrovolníka čekajícího na schválení.</li>
+    <li><strong>ApproveVolunteer</strong> - Schvaluje konkrétního dobrovolníka.</li>
+</ul>
+<br>
+<h3>WalkBookingController.php</h3>
+<p><strong>Popis:</strong> Zpracovává rezervace venčení zvířat a související plánování.</p>
+
+<h4>Funkce:</h4>
+<ul>
+    <li><strong>index</strong> - Zobrazuje seznam všech rezervací venčení.</li>
+    <li><strong>getVolunteerHistory</strong> - Zobrazuje historii rezervací konkrétního dobrovolníka.</li>
+    <li><strong>showAnimalSchedule</strong> - Zobrazuje rozvrh venčení konkrétního zvířete.</li>
+    <li><strong>bookTermin</strong> - Vytváří novou rezervaci termínu pro venčení zvířete.</li>
+    <li><strong>cancelTermin</strong> - Ruší rezervaci termínu pro venčení.</li>
+    <li><strong>getAnimalPlan</strong> - Zobrazuje plán venčení konkrétního zvířete.</li>
+    <li><strong>animalIndex</strong> - Zobrazuje seznam rezervací pro konkrétní zvíře.</li>
+    <li><strong>detail</strong> - Zobrazuje detaily konkrétní rezervace.</li>
+    <li><strong>approveBooking</strong> - Schvaluje konkrétní rezervaci.</li>
+    <li><strong>declineBooking</strong> - Zamítá konkrétní rezervaci.</li>
+    <li><strong>postAnimalPlan</strong> - Vytváří nebo aktualizuje plán venčení pro zvíře.</li>
+</ul>
+<br>
+<h3>Databáze</h3>
+
+<object type="image/svg+xml" data="Utulek_diagram.svg" style="width: 50%; height: auto;">
+    
+</object>
+
+<h2>Instalace</h2>
+
+<h3>Inicializace pro localhost</h3>
+    <ol>
+        <li>
+            <strong>Zkopírování souborů projektu:</strong>
+            <p>Použijte <code>git clone</code> nebo jiný způsob ke zkopírování souborů projektu.</p>
+        </li>
+        <li>
+            <strong>Spuštění MySQL serveru:</strong>
+            <p>Spusťte MySQL server (např. pomocí XAMPP nebo jiného nástroje).</p>
+        </li>
+        <li>
+            <strong>Instalace potřebného softwaru:</strong>
+            <p>Nainstalujte:</p>
+            <ul>
+                <li>PHP ve verzi <strong>8.1</strong>,</li>
+                <li>Composer verze <strong>minimálně 2.8.3</strong>,</li>
+                <li>npm verze <strong>minimálně 10.9.0</strong>,</li>
+                <li>Node.js verze <strong>minimálně 22.11.0</strong>.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Instalace balíčků:</strong>
+            <p>Spusťte následující příkazy:</p>
+            <pre><code>npm install
+composer install</code></pre>
+        </li>
+        <li>
+            <strong>Nastavení <code>.env</code> souboru:</strong>
+            <p>Vytvořte kopii souboru <code>env.example</code> a přejmenujte ji na <code>.env</code>. V souboru <code>.env</code> vyplňte přístupové údaje k vaší MySQL databázi.</p>
+        </li>
+        <li>
+            <strong>Inicializace databáze:</strong>
+            <p>Spusťte příkaz:</p>
+            <pre><code>php artisan migrate --seed</code></pre>
+            <p>Pokud se zobrazí dotaz na vytvoření databáze IIS, potvrďte volbou <em>Ano</em>.</p>
+        </li>
+        <li>
+            <strong>Generování klíče aplikace:</strong>
+            <p>Vygenerujte aplikační klíč pomocí příkazu:</p>
+            <pre><code>php artisan key:generate</code></pre>
+        </li>
+        <li>
+            <strong>Spuštění aplikace:</strong>
+            <p>Otevřete dva terminály:</p>
+            <ul>
+                <li>V <strong>prvním terminálu</strong> spusťte Vite:</li>
+                <pre><code>npm run dev</code></pre>
+                <li>V <strong>druhém terminálu</strong> spusťte Artisan server:</li>
+                <pre><code>php artisan serve</code></pre>
+            </ul>
+        </li>
+        <li>
+            <strong>Přístup k aplikaci:</strong>
+            <p>V druhém terminálu uvidíte URL adresu aplikace (výchozí: <code>http://127.0.0.1:8000/</code>).</p>
+            <p>Otevřete tuto adresu ve webovém prohlížeči pro přístup ke stránce.</p>
+        </li>
+    </ol>
+
+<h2>Známé problémy</h2>
+<p>Zde popište, které body zadání nejsou implementovány a z jakého důvodu. Např. &bdquo;Z časových důvodů nebyla implementována správa uživatelů.&rdquo; Pomůžete tím zrychlit hodnocení, když neimplementované funkce nebudeme muset dlouze hledat.</p>
+
+</body>
+</html>
