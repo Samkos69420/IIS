@@ -24,9 +24,6 @@ export default function Create({ auth, animal }) {
         e.preventDefault();
 
         // Combine date and time into one string
-      //  const formattedTime = `${data.examination_time}:00`; // Ensure time is in "HH:mm:ss" format
-
-        // Combine date and time into one string
         const combinedDateTime = `${data.examination_date} ${data.examination_time}`;
         // Send the combined datetime as `examination_date`
         post(`/animals/${animal.id}/record/create`, {
@@ -49,13 +46,64 @@ export default function Create({ auth, animal }) {
                     <Link href="/" className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
-                    <Link
-                        href={`/animals/${animal.id}/record`}
-                        className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition"
-                    >
-                        Zpět
-                    </Link>
-                </header>
+                    <nav className="flex gap-4">
+                        <Link
+                            href="/animals"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/animals")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Zvířata
+                        </Link>
+                        <Link
+                            href="/examination"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/examination")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Kalendář
+                        </Link>
+                        <Link
+                            href="/request"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/request")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Vyšetření
+                        </Link>
+                    </nav>
+                    <div>
+                        {auth?.user ? (
+                            <Link
+                                href={route("profile.edit")}
+                                className="font-semibold text-gray-600 hover:text-gray-900"
+                            >
+                                {auth.user.name}
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href={route("login")}
+                                    className="font-semibold text-gray-600 hover:text-gray-900"
+                                >
+                                    Přihlášení
+                                </Link>
+                                <Link
+                                    href={route("register")}
+                                    className="ml-4 font-semibold text-gray-600 hover:text-gray-900"
+                                >
+                                    Registrace
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                </header>   
 
                 <main className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
                     <h1 className="text-2xl font-bold mb-6">
@@ -82,7 +130,7 @@ export default function Create({ auth, animal }) {
                                 htmlFor="examination_date"
                                 className="block text-gray-700 font-medium mb-2"
                             >
-                                Datum vyšetření
+                                Datum vyšetření*
                             </label>
                             <input
                                 type="date"
@@ -108,7 +156,7 @@ export default function Create({ auth, animal }) {
                                 htmlFor="examination_time"
                                 className="block text-gray-700 font-medium mb-2"
                             >
-                                Čas vyšetření
+                                Čas vyšetření*
                             </label>
                             <input
                                 type="time"
@@ -134,7 +182,7 @@ export default function Create({ auth, animal }) {
                                 htmlFor="examination_type"
                                 className="block text-gray-700 font-medium mb-2"
                             >
-                                Typ vyšetření
+                                Typ vyšetření*
                             </label>
                             <select
                                 id="examination_type"

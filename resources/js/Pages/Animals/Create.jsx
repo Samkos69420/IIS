@@ -1,31 +1,69 @@
 import { useState } from "react";
-import { Link, Head, usePage } from "@inertiajs/react";
+import { Link, Head } from "@inertiajs/react";
 import axios from "axios";
 
-export default function Create({auth}) {
-    const { data, setData, post, processing, errors } = useForm({
-        name: '',
-        kind: '',
-        age: '',
-        gender: '',
-        description: '',
-        date_found: '',
-        where_found: '',
-        photo: null,
+export default function Create() {
+    const [formData, setFormData] = useState({
+        name: "",
+        breed: "",
+        age: "",
+        weight: "",
+        neutered: false,
+        gender: "",
+        description: "",
+        date_found: new Date().toISOString().split("T")[0],
+        where_found: "",
+        photo_url: null,
     });
+    const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSubmit = (e) => {
-    //    e.preventDefault();
-       // post('/animals/create');
-        axios.post(`/animals/create`);
+    const handleInputChange = (e) => {
+        const { name, value, type, checked, files } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: type === "checkbox" ? checked : files ? files[0] : value,
+        }));
+    };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setProcessing(true);
+        setErrors({});
+        setErrorMessage("");
+
+        try {
+            const formDataToSend = new FormData();
+            for (const key in formData) {
+                formDataToSend.append(key, formData[key]);
+            }
+
+            const response = await axios.post(`/animals/create`, formDataToSend, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            if (response.data.success) {
+                alert(response.data.message);
+                window.location.href = "/animals"; // Redirect back to animals page
+            }
+        } catch (error) {
+            if (error.response?.data?.errors) {
+                setErrors(error.response.data.errors);
+            } else if (error.response?.data?.message) {
+                setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage("Nastala neočekávaná chyba. Prosím zkuste to znovu.");
+            }
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
         <>
             <Head title="Přidat zvíře" />
             <div className="min-h-screen bg-gray-100">
-                {/* Header */}
                 <header className="flex justify-between items-center p-6">
                     <Link href="/animals" className="text-gray-700 px-4 py-2">
                         Zpět na seznam zvířat
@@ -35,22 +73,128 @@ export default function Create({auth}) {
                 <main className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
                     <h1 className="text-2xl font-bold mb-6">Přidat zvíře</h1>
 
+                    {errorMessage && (
+                        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+                            {errorMessage}
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit}>
+                        {/* Name */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-medium mb-2">Jméno</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                className={`w-full border-gray-300 rounded-lg shadow-sm ${
+                                    errors.name ? "border-red-500" : ""
+                                }`}
+                            />
+                            {errors.name && <p className="text-red-500 text-sm mt-2">{errors.name}</p>}
+                        </div>
+
+                        {/* Breed */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-medium mb-2">Plemeno</label>
+                            <input
+                                type="text"
+                                name="breed"
+                                value={formData.breed}
+                                onChange={handleInputChange}
+                                className={`w-full border-gray-300 rounded-lg shadow-sm ${
+                                    errors.breed ? "border-red-500" : ""
+                                }`}
+                            />
+                            {errors.breed && <p className="text-red-500 text-sm mt-2">{errors.breed}</p>}
+                        </div>
+
+                        {/* Age */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-medium mb-2">Věk</label>
+                            <input
+                                type="number"
+                                name="age"
+                                value={formData.age}
+                                onChange={handleInputChange}
+                                className={`w-full border-gray-300 rounded-lg shadow-sm ${
+                                    errors.age ? "border-red-500" : ""
+                                }`}
+                            />
+                            {errors.age && <p className="text-red-500 text-sm mt-2">{errors.age}</p>}
+                        </div>
+
+                        {/* Weight */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-medium mb-2">Hmotnost (kg)</label>
+                            <input
+                                type="number"
+                                name="weight"
+                                value={formData.weight}
+                                onChange={handleInputChange}
+                                className={`w-full border-gray-300 rounded-lg shadow-sm ${
+                                    errors.weight ? "border-red-500" : ""
+                                }`}
+                            />
+                            {errors.weight && <p className="text-red-500 text-sm mt-2">{errors.weight}</p>}
+                        </div>
+
+                        {/* Neutered */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-medium mb-2">Kastrovaný</label>
+                            <input
+                                type="checkbox"
+                                name="neutered"
+                                checked={formData.neutered}
+                                onChange={handleInputChange}
+                                className="mr-2"
+                            />
+                            Ano
+                        </div>
+
+                        {/* Gender */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-medium mb-2">Pohlaví</label>
+                            <select
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleInputChange}
+                                className={`w-full border-gray-300 rounded-lg shadow-sm ${
+                                    errors.gender ? "border-red-500" : ""
+                                }`}
+                            >
+                                {formData.gender === "" && <option value="">Vyberte pohlaví</option>}
+                                <option value="male">Samec</option>
+                                <option value="female">Samice</option>
+                            </select>
+                            {errors.gender && <p className="text-red-500 text-sm mt-2">{errors.gender}</p>}
+                        </div>
+
+                        {/* Description */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-medium mb-2">Popis</label>
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleInputChange}
+                                className={`w-full border-gray-300 rounded-lg shadow-sm ${
+                                    errors.description ? "border-red-500" : ""
+                                }`}
+                            ></textarea>
+                            {errors.description && <p className="text-red-500 text-sm mt-2">{errors.description}</p>}
+                        </div>
+
                         {/* Date Found */}
                         <div className="mb-4">
-                            <label
-                                htmlFor="date_found"
-                                className="block text-gray-700 font-medium mb-2"
-                            >
-                                Datum nálezu
-                            </label>
+                            <label className="block text-gray-700 font-medium mb-2">Datum nálezu</label>
                             <input
                                 type="date"
-                                id="date_found"
-                                value={data.date_found}
-                                onChange={(e) => setData('date_found', e.target.value)}
-                                className={`w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                                    errors.date_found ? 'border-red-500' : ''
+                                name="date_found"
+                                value={formData.date_found}
+                                onChange={handleInputChange}
+                                className={`w-full border-gray-300 rounded-lg shadow-sm ${
+                                    errors.date_found ? "border-red-500" : ""
                                 }`}
                             />
                             {errors.date_found && (
@@ -58,165 +202,32 @@ export default function Create({auth}) {
                             )}
                         </div>
 
-                        {/* Name */}
-                        <div className="mb-4">
-                            <label
-                                htmlFor="name"
-                                className="block text-gray-700 font-medium mb-2"
-                            >
-                                Jméno
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
-                                className={`w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                                    errors.name ? 'border-red-500' : ''
-                                }`}
-                            />
-                            {errors.name && (
-                                <p className="text-red-500 text-sm mt-2">{errors.name}</p>
-                            )}
-                        </div>
-
-                        {/* Kind */}
-                        <div className="mb-4">
-                            <label
-                                htmlFor="kind"
-                                className="block text-gray-700 font-medium mb-2"
-                            >
-                                Druh
-                            </label>
-                            <select
-                                id="kind"
-                                value={data.kind}
-                                onChange={(e) => setData('kind', e.target.value)}
-                                className={`w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                                    errors.kind ? 'border-red-500' : ''
-                                }`}
-                            >
-                                <option value="">Vyberte druh</option>
-                                <option value="dog">Pes</option>
-                                <option value="cat">Kočka</option>
-                                <option value="rabbit">Králík</option>
-                            </select>
-                            {errors.kind && (
-                                <p className="text-red-500 text-sm mt-2">{errors.kind}</p>
-                            )}
-                        </div>
-
-                        {/* Age */}
-                        <div className="mb-4">
-                            <label
-                                htmlFor="age"
-                                className="block text-gray-700 font-medium mb-2"
-                            >
-                                Věk
-                            </label>
-                            <input
-                                type="number"
-                                id="age"
-                                value={data.age}
-                                onChange={(e) => setData('age', e.target.value)}
-                                className={`w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                                    errors.age ? 'border-red-500' : ''
-                                }`}
-                            />
-                            {errors.age && (
-                                <p className="text-red-500 text-sm mt-2">{errors.age}</p>
-                            )}
-                        </div>
-
-                        {/* Gender */}
-                        <div className="mb-4">
-                            <label
-                                htmlFor="gender"
-                                className="block text-gray-700 font-medium mb-2"
-                            >
-                                Pohlaví
-                            </label>
-                            <select
-                                id="gender"
-                                value={data.gender}
-                                onChange={(e) => setData('gender', e.target.value)}
-                                className={`w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                                    errors.gender ? 'border-red-500' : ''
-                                }`}
-                            >
-                                <option value="">Vyberte pohlaví</option>
-                                <option value="male">Muž</option>
-                                <option value="female">Žena</option>
-                            </select>
-                            {errors.gender && (
-                                <p className="text-red-500 text-sm mt-2">{errors.gender}</p>
-                            )}
-                        </div>
-
-                        {/* Description */}
-                        <div className="mb-4">
-                            <label
-                                htmlFor="description"
-                                className="block text-gray-700 font-medium mb-2"
-                            >
-                                Popis
-                            </label>
-                            <textarea
-                                id="description"
-                                value={data.description}
-                                onChange={(e) => setData('description', e.target.value)}
-                                className={`w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                                    errors.description ? 'border-red-500' : ''
-                                }`}
-                                rows="4"
-                            />
-                            {errors.description && (
-                                <p className="text-red-500 text-sm mt-2">{errors.description}</p>
-                            )}
-                        </div>
-
                         {/* Where Found */}
                         <div className="mb-4">
-                            <label
-                                htmlFor="where_found"
-                                className="block text-gray-700 font-medium mb-2"
-                            >
-                                Místo nálezu
-                            </label>
+                            <label className="block text-gray-700 font-medium mb-2">Místo nálezu</label>
                             <input
                                 type="text"
-                                id="where_found"
-                                value={data.where_found}
-                                onChange={(e) => setData('where_found', e.target.value)}
-                                className={`w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                                    errors.where_found ? 'border-red-500' : ''
+                                name="where_found"
+                                value={formData.where_found}
+                                onChange={handleInputChange}
+                                className={`w-full border-gray-300 rounded-lg shadow-sm ${
+                                    errors.where_found ? "border-red-500" : ""
                                 }`}
                             />
-                            {errors.where_found && (
-                                <p className="text-red-500 text-sm mt-2">
-                                    {errors.where_found}
-                                </p>
-                            )}
+                            {errors.where_found && <p className="text-red-500 text-sm mt-2">{errors.where_found}</p>}
                         </div>
 
                         {/* Photo */}
                         <div className="mb-4">
-                            <label
-                                htmlFor="photo"
-                                className="block text-gray-700 font-medium mb-2"
-                            >
-                                Fotografie
-                            </label>
+                            <label className="block text-gray-700 font-medium mb-2">Fotografie</label>
                             <input
                                 type="file"
-                                id="photo"
-                                onChange={(e) =>
-                                    setData('photo', e.target.files[0])
-                                }
+                                name="photo_url"
+                                onChange={handleInputChange}
                                 className="w-full border-gray-300 rounded-lg shadow-sm"
                             />
-                            {errors.photo && (
-                                <p className="text-red-500 text-sm mt-2">{errors.photo}</p>
+                            {errors.photo_url && (
+                                <p className="text-red-500 text-sm mt-2">{errors.photo_url}</p>
                             )}
                         </div>
 
@@ -224,16 +235,16 @@ export default function Create({auth}) {
                         <div className="flex justify-end gap-4">
                             <Link
                                 href="/animals"
-                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow hover:bg-gray-400 transition"
+                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow hover:bg-gray-400"
                             >
                                 Zrušit
                             </Link>
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 transition"
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500"
                             >
-                                {processing ? 'Odesílání...' : 'Odeslat'}
+                                {processing ? "Odesílání..." : "Odeslat"}
                             </button>
                         </div>
                     </form>

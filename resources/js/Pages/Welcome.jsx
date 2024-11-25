@@ -32,9 +32,14 @@ export default function Welcome({ auth, animals }) {
                             </Link>
                         )}
                         {userRoles.includes("Vet") && (
+                            <>
+                            <Link href="/examination" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                                Vyšetření
+                            </Link>
                             <Link href="/request" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                 Žádosti
                             </Link>
+                            </>
                         )}
                         {userRoles.includes("CareTaker") && (
                             <>
@@ -51,13 +56,13 @@ export default function Welcome({ auth, animals }) {
                         )}
                         {userRoles.includes("Admin") && (
                             <>
-                                <Link href="/users?role=caretakers" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                                <Link href="/users?role=CareTaker" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                     Pečovatelé
                                 </Link>
-                                <Link href="/users?role=vets" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                                <Link href="/users?role=Vet" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                     Veterináři
                                 </Link>
-                                <Link href="/users?role=volunteers" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                                <Link href="/users?role=Volunteer" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                     Dobrovolníci
                                 </Link>
                             </>

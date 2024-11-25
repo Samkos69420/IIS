@@ -52,20 +52,34 @@ class WalkBookingController extends Controller
      */
     public function bookTermin(Request $request, $id)
     {
-        $request->validate([
-            'start' => 'required|date',
-            'end' => 'required|date|after:start',
-        ]);
+        try {
+            $validated = $request->validate([
+                'start' => 'required|date',
+                'end' => 'required|date|after:start',
+            ]);
 
-        WalkBooking::create([
-            'user_id' => $request->user()->id,
-            'animal_id' => $id,
-            'start' => $request->start,
-            'end' => $request->end,
-            'booking_date' => now(),
-        ]);
+            $booking = WalkBooking::create([
+                'user_id' => $request->user()->id,
+                'animal_id' => $id,
+                'start' => $validated['start'],
+                'end' => $validated['end'],
+                'booking_date' => now(),
+                'status' => 'pending',
+                'approved' => false,
+            ]);
 
-        return redirect()->back()->with('success', 'Booking created successfully.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Booking created successfully.',
+                'booking' => $booking,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create booking.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -73,15 +87,27 @@ class WalkBookingController extends Controller
      */
     public function cancelTermin(Request $request, $id)
     {
-        $booking = WalkBooking::where('user_id', $request->user()->id)
-                              ->where('animal_id', $id)
-                              ->where('id', $request->booking_id)
-                              ->firstOrFail();
+        try {
+            $booking = WalkBooking::where('user_id', $request->user()->id)
+                ->where('animal_id', $id)
+                ->where('id', $request->booking_id)
+                ->firstOrFail();
 
-        $booking->delete();
+            $booking->delete();
 
-        return redirect()->back()->with('success', 'Booking canceled successfully.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Booking canceled successfully.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to cancel booking.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+
 
     public function getAnimalPlan($id)
     {
@@ -133,25 +159,38 @@ class WalkBookingController extends Controller
 
     public function postAnimalPlan(Request $request, $id)
     {
-        // Validate incoming data
-        $request->validate([
-            'start' => 'required|date|after:now',
-            'end' => 'required|date|after:start', 
-            'available' => 'required|boolean', 
-        ]);
-
-
-        // Create or update the walk plan for the animal
-        $walkPlan = WalkBooking::create([
-            'animal_id' => $id,          
-            'start' => $request->start, 
-            'end' => $request->end,      
-            'available' => $request->available, 
-            'status' => 'pending',      
-            'booking_date' => now(),
+        try {
+            // Validate incoming data
+            $validated = $request->validate([
+                'start' => 'required|date|after:now',
+                'end' => 'required|date|after:start',
+                'available' => 'required|boolean',
             ]);
-        return redirect()->route('animals.schedule', ['id' => $id])
-                        ->with('success', 'Walk plan has been created successfully.');
+    
+            // Create or update the walk plan for the animal
+            $walkPlan = WalkBooking::create([
+                'animal_id' => $id,
+                'user_id' => null,
+                'start' => $validated['start'],
+                'end' => $validated['end'],
+                'available' => $validated['available'],
+                'status' => 'pending',
+                'booking_date' => now(),
+            ]);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Walk plan created successfully.',
+                'walkPlan' => $walkPlan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while creating the walk plan.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+    
 
 }

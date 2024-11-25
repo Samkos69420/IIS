@@ -18,7 +18,7 @@ class examination_request extends Model
 
     public function animal()
     {
-        return $this->belongsTo(Animal::class);
+        return $this->belongsTo(Animal::class, 'animal_id');
     }
 
     public function vet()
@@ -26,8 +26,8 @@ class examination_request extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function examinations()
+    public function examination()
     {
-        return $this->hasMany(Examination::class, 'request_id');
+        return $this->hasOne(Examination::class, 'request_id');
     }
 }

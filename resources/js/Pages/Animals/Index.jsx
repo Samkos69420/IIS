@@ -40,6 +40,8 @@ export default function Animals({ initialAnimals }) {
     );
 
     const handleDeleteAnimal = async (animalId) => {
+        if (!confirm("Opravdu chcete toto zvíře smazat?")) return;
+
         try {
             const response = await axios.post(`/animals/${animalId}/delete`);
             if (response.data.success) {
@@ -64,9 +66,15 @@ export default function Animals({ initialAnimals }) {
         window.location.href = `/animals/${animalId}/edit`;
     };
 
+    const handleViewPlan = (animalId) => {
+        window.location.href = `/animals/${animalId}/planWalks`;
+    };
+
     const handleBorrowClick = (animalId) => {
-        if (auth?.user?.role === "Volunteer") {
+        if (userRoles.includes("Volunteer")) {
             window.location.href = `/animals/${animalId}/schedule-volunteer`;
+        } else if (userRoles.includes("pendingVolunteer")) {
+            window.location.href = "/apply";
         } else {
             window.location.href = "/register";
         }
@@ -95,6 +103,16 @@ export default function Animals({ initialAnimals }) {
                             Zvířata
                         </Link>
                         {userRoles.includes("Vet") && (
+                            <><Link
+                                href="/examination"
+                                className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                    window.location.pathname.includes("/examination")
+                                        ? "underline font-bold"
+                                        : ""
+                                }`}
+                            >
+                                Vyšetření
+                            </Link>
                             <Link
                                 href="/request"
                                 className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
@@ -105,6 +123,30 @@ export default function Animals({ initialAnimals }) {
                             >
                                 Žádosti
                             </Link>
+                            </>
+                        )}
+                        {userRoles.includes("CareTaker") && (
+                            <><Link
+                                href="/examination"
+                                className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                    window.location.pathname.includes("/examination")
+                                        ? "underline font-bold"
+                                        : ""
+                                }`}
+                            >
+                                Vyšetření
+                            </Link>
+                            <Link
+                                href="/request"
+                                className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                    window.location.pathname.includes("/request")
+                                        ? "underline font-bold"
+                                        : ""
+                                }`}
+                            >
+                                Žádosti
+                            </Link>
+                            </>
                         )}
                     </nav>
 
@@ -159,7 +201,7 @@ export default function Animals({ initialAnimals }) {
                                     <tr>
                                         <th className="border px-4 py-2 text-left">ID</th>
                                         <th className="border px-4 py-2 text-left">Jméno</th>
-                                        <th className="border px-4 py-2 text-left">Druh</th>
+                                        <th className="border px-4 py-2 text-left">Plemeno</th>
                                         <th className="border px-4 py-2 text-left">Věk</th>
                                         <th className="border px-4 py-2 text-left">Akce</th>
                                     </tr>
@@ -178,7 +220,7 @@ export default function Animals({ initialAnimals }) {
                                                 >
                                                     {animal.name}
                                                 </td>
-                                                <td className="border px-4 py-2">{animal.kind}</td>
+                                                <td className="border px-4 py-2">{animal.breed}</td>
                                                 <td className="border px-4 py-2">{animal.age}</td>
                                                 <td className="border px-4 py-2 flex gap-2">
                                                     <button
@@ -188,6 +230,14 @@ export default function Animals({ initialAnimals }) {
                                                         className="px-2 py-1 bg-blue-500 text-white rounded"
                                                     >
                                                         Vyšetření
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleViewPlan(animal.id)
+                                                        }
+                                                        className="px-2 py-1 bg-green-500 text-white rounded"
+                                                    >
+                                                        Plán
                                                     </button>
                                                     <button
                                                         onClick={() =>

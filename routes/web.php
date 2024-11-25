@@ -42,7 +42,7 @@ Route::get('/animals/{id}', [AnimalController::class, 'show'])->name('animals.de
 Route::post('/apply', [UserController::class,'applyForApproval'])->middleware('auth'); //user žádá o potvrzení
 
 Route::middleware(['auth', 'role:Admin'])->group( function (){
-    Route::get('/users', [UserController::class, 'show_users'])->name('adnim');
+    Route::get('/users', [UserController::class, 'show_users'])->name('admin');
     Route::get('/users/{id}', [UserController::class,'show_detail'])->where('id', '[0-9]+');
     Route::get('/users/{id}/edit',[UserController::class,'show_edit'])->where('id', '[0-9]+');
     Route::get('/users/create', [UserController::class,'show_create']);

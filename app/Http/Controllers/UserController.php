@@ -14,13 +14,30 @@ class UserController extends Controller
     /**
      * Display a list of users.
      */
-    public function show_users()
+    public function show_users(Request $request)
     {
-        $users = User::all();
+        $role = $request->query('role'); // Get the role from the query string
+    
+        $users = User::with('roles')
+            ->when($role, function ($query, $role) {
+                $query->whereHas('roles', function ($query) use ($role) {
+                    $query->where('name', $role);
+                });
+            })
+            ->get();
+    
         return Inertia::render('Users/Index', [
             'users' => $users,
-        ]); 
+            'roleFilter' => $role,
+        ]);
     }
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * Display the details of a specific user.
@@ -46,39 +63,53 @@ class UserController extends Controller
      */
     public function create_user(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
-            'role' => 'required|string|in:CareTaker,Vet,Volunteer,pendingVolunteer,None',
-        ]);
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
-
-
-        if ($validated['role'] == 'None') {
-            $user->syncRoles([]);
-        }else {
-            $user->assignRole($validated['role']);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|string|min:8',
+                'role' => 'required|string|in:CareTaker,Vet,Volunteer,None',
+            ]);
+    
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+            ]);
+    
+            if ($validated['role'] === 'None') {
+                $user->syncRoles([]);
+            } else {
+                $user->syncRoles([$validated['role']]);
+            }
+    
+            return response()->json(['success' => true, 'message' => 'User created successfully.']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while creating the user.',
+                'error' => $e->getMessage(), 
+            ], 500);
         }
-
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
+    
+    
+    
 
     /**
      * Show the form for editing a user.
      */
     public function show_edit($id)
     {
-        $user = User::findOrFail($id); 
+        $user = User::with('roles')->findOrFail($id);
+        $roles = ['CareTaker', 'Vet', 'Volunteer', 'None'];
+    
         return Inertia::render('Users/Edit', [
             'user' => $user,
+            'roles' => $roles, // Always provide this
         ]);
     }
+    
 
     /**
      * Edit an existing user in the database.
@@ -86,27 +117,27 @@ class UserController extends Controller
     public function edit_user(Request $request, $id)
     {
         $user = User::findOrFail($id);
-
+    
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8',
-            'role' => 'required|string|in:CareTaker,Vet,Volunteer,pendingVolunteer,None'
+            'role' => 'required|string|in:CareTaker,Vet,Volunteer,None'
         ]);
-
-        if ($validated['role'] == 'None') {
+    
+        if ($validated['role'] === 'None') {
             $user->syncRoles([]);
-        }else {
-            $user->assignRole($validated['role']);
+        } else {
+            $user->syncRoles([$validated['role']]);
         }
-
+    
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'] ? Hash::make($validated['password']) : $user->password,
         ]);
-
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+    
+        return response()->json(['success' => true, 'message' => 'User updated successfully.']);
     }
 
     /**
@@ -116,16 +147,16 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
-    }
+    
+        return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
+    }    
 
     /**
      * Display a list of volunteers pending approval.
      */
     public function getApproveVolunteers()
     {
-        $volunteers = User::role('pandingVolunteer')->get();
+        $volunteers = User::role('pendingVolunteer')->get();
 
         return Inertia::render('Volunteers/Approve', [
             'volunteers' => $volunteers,
@@ -149,34 +180,59 @@ class UserController extends Controller
      */
     public function ApproveVolunteer(Request $request, $id)
     {
-        $volunteer = User::findOrFail($id);
+        try {
+            $volunteer = User::findOrFail($id);
 
-        if ($volunteer->hasRole('pendingVolunteer')) {
+            if (!$volunteer->hasRole('pendingVolunteer')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User does not have the pendingVolunteer role and cannot be approved.',
+                ], 400);
+            }
+
             $volunteer->syncRoles(['Volunteer']);
 
-            return redirect()->route('approvevolunteers')
-                ->with('success', 'Volunteer approved successfully.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Volunteer approved successfully.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while approving the volunteer.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        return redirect()->route('approvevolunteers')
-            ->with('error', 'User does not have the pendingVolunteer role and cannot be approved.');
     }
+
     /**
      * Deny a specific volunteer.
      */
-    public function DenyVolunteer(Request $request, $id){
-        $volunteer = User::findOrFail($id);
+    public function DenyVolunteer(Request $request, $id)
+    {
+        try {
+            $volunteer = User::findOrFail($id);
 
-        if ($volunteer->hasRole('pendingVolunteer')) {
-            $volunteer->syncRoles(['Volunteer']);
+            if (!$volunteer->hasRole('pendingVolunteer')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User does not have the pendingVolunteer role and cannot be denied.',
+                ], 400);
+            }
 
-            return redirect()->route('approvevolunteers')
-                ->with('success', 'Volunteer denied successfully.');
+            $volunteer->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Volunteer denied successfully.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while denying the volunteer.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        return redirect()->route('approvevolunteers')
-            ->with('error', 'User does not have the pendingVolunteer role and cannot be denied.');
-
     }
 
     public function applyForApproval(Request $request)
@@ -191,6 +247,4 @@ class UserController extends Controller
     
         return redirect()->route('animals.list')->with('error', 'You cant apply!');
     }
-    
-
 }

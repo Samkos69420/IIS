@@ -13,16 +13,42 @@ export default function AnimalRecords({ animal, records }) {
                     <Link href="/" className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
-                    <Link
-                        href="/animals"
-                        className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition"
-                    >
-                        Zvířata
-                    </Link>
+                    <nav className="flex gap-4">
+                        <Link
+                            href="/animals"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/animals")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Zvířata
+                        </Link>
+                        <Link
+                            href="/examination"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/examination")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Kalendář
+                        </Link>
+                        <Link
+                            href="/request"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/request")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Vyšetření
+                        </Link>
+                    </nav>
                     <div>
                         {auth?.user ? (
                             <Link
-                                href={route('profile.edit')}
+                                href={route("profile.edit")}
                                 className="font-semibold text-gray-600 hover:text-gray-900"
                             >
                                 {auth.user.name}
@@ -30,13 +56,13 @@ export default function AnimalRecords({ animal, records }) {
                         ) : (
                             <>
                                 <Link
-                                    href={route('login')}
+                                    href={route("login")}
                                     className="font-semibold text-gray-600 hover:text-gray-900"
                                 >
                                     Přihlášení
                                 </Link>
                                 <Link
-                                    href={route('register')}
+                                    href={route("register")}
                                     className="ml-4 font-semibold text-gray-600 hover:text-gray-900"
                                 >
                                     Registrace
@@ -67,10 +93,13 @@ export default function AnimalRecords({ animal, records }) {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <p>
-                                            <strong>Druh:</strong> {animal.kind}
+                                            <strong>Plemeno:</strong> {animal.breed}
                                         </p>
                                         <p>
                                             <strong>Věk:</strong> {animal.age}
+                                        </p>
+                                        <p>
+                                            <strong>Váha:</strong> {animal.weight}
                                         </p>
                                         <p>
                                             <strong>Pohlaví:</strong>{' '}

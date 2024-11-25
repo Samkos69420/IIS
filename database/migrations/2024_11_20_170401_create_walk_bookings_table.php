@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('walk_bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('animal_id')->constrained('animals')->cascadeOnDelete();
             $table->dateTime('start');
             $table->dateTime('end');

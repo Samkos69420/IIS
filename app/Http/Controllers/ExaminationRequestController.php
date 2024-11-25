@@ -17,9 +17,10 @@ class ExaminationRequestController extends Controller
     public function index()
     {
         // Get paginated list of examination requests with relationships
-        $examination_requests = examination_request::with(['animal', 'vet'])
+        $examination_requests = examination_request::with(['examination', 'animal', 'vet'])
             ->latest()
             ->paginate(10);
+        \Log::info('Examination Requests:', $examination_requests->toArray());
 
         // Pass data to Inertia::render view
         return Inertia::render('ExaminationRequest/Index', [

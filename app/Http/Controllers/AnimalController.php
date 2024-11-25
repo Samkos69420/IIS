@@ -14,7 +14,7 @@ class AnimalController extends Controller
      */
     public function index()
     {
-        $animals = Animal::paginate(10); // Paginate animals
+        $animals = Animal::latest()->paginate(10); // Paginate animals
         return Inertia::render('Animals/Index', [
             'initialAnimals' => $animals->items(),
         ]);
@@ -37,7 +37,7 @@ class AnimalController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Animals/Index');
+        return Inertia::render('Animals/Create');
     }
 
     /**
@@ -45,28 +45,43 @@ class AnimalController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'photo_url' => 'required|url', // Assuming photo_url is a URL in your schema
-            'name' => 'required|string|max:255', 
-            'breed' => 'nullable|string|max:255', 
-            'age' => 'required|integer|min:0|max:30', 
-            'weight' => 'required|numeric|min:0|max:200', // Adjust max weight as needed
-            'neutered' => 'required|boolean', 
-            'gender' => 'required|in:male,female', 
-            'description' => 'nullable|string|max:1000', 
-            'date_found' => 'required|date|before_or_equal:today', 
-            'where_found' => 'required|string|max:255',
-        ]);
+        try {        
+            $request->merge(['neutered' => $request->boolean('neutered')]);
 
-        $animal = Animal::create($validated);
-
-        if ($request->hasFile('photo')) {
-            $animal->photo = $request->file('photo')->store('animals', 'public');
-            $animal->save();
+            $validated = $request->validate([
+                'photo_url' => 'nullable|image|max:2048', // Assuming photo_url is a URL in your schema
+                'name' => 'required|string|max:255', 
+                'breed' => 'nullable|string|max:255', 
+                'age' => 'required|integer|min:0|max:30', 
+                'weight' => 'required|numeric|min:0|max:200', // Adjust max weight as needed
+                'neutered' => 'required|boolean', 
+                'gender' => 'required|in:male,female', 
+                'description' => 'nullable|string|max:1000', 
+                'date_found' => 'required|date|before_or_equal:today', 
+                'where_found' => 'required|string|max:255',
+            ]);
+    
+            $animal = Animal::create($validated);
+    
+            if ($request->hasFile('photo_url')) {
+                $animal->photo_url = $request->file('photo_url')->store('animals', 'public');
+                $animal->save();
+            }
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Animal created successfully.',
+                'animal' => $animal,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while creating the animal.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        return redirect()->route('animals.index')->with('success', 'Animal created successfully.');
     }
+    
 
     /**
      * Show the form for editing an existing animal.
