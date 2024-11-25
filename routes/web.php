@@ -55,8 +55,8 @@ Route::middleware(['auth', 'role:Volunteer|Admin'])->group( function (){
     Route::get('/volunteer/history', [WalkBookingController::class, 'getVolunteerHistory']); //jeho historie
 
     Route::get('/animals/{id}/schedule-volunteer',[WalkBookingController::class, 'showAnimalSchedule'])->where('id', '[0-9]+');
-    Route::post('/animals/{id}/bookTermin', [WalkBookingController::class, 'bookTermin'])->where('id', '[0-9]+');
-    Route::post('/animals/{id}/cancelTermin', [WalkBookingController::class, 'cancelTermin'])->where('id', '[0-9]+');
+    Route::post('/booking/{id}/bookTermin', [WalkBookingController::class, 'bookTermin'])->where('id', '[0-9]+');
+    Route::post('/booking/{id}/cancelTermin', [WalkBookingController::class, 'cancelTermin'])->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth', 'role:Vet|Admin'])->group( function (){
@@ -117,6 +117,7 @@ Route::middleware(['auth', 'role:CareTaker|Admin'])->group( function (){
     Route::post('/booking/{id}/approve',[WalkBookingController::class,'ApproveBooking'])->where('id', '[0-9]+');
     Route::post('/booking/{id}/decline',[WalkBookingController::class,'DeclineBooking'])->where('id', '[0-9]+'); 
 
+    Route::post('booking/{id}/delete',[WalkBookingController::class, 'deleteBooking'])->where('id', '[0-9]+');
 
     //eviduje zapůjčení a vrácení
     Route::post('animals/{id}/taken',[AnimalController::class,'animalTaken'])->where('id', '[0-9]+');

@@ -50,23 +50,26 @@ class WalkBookingController extends Controller
     /**
      * Book a new termin for an animal.
      */
-    public function bookTermin(Request $request, $id)
+    public function bookTermin($id)
     {
         try {
-            $validated = $request->validate([
-                'start' => 'required|date',
-                'end' => 'required|date|after:start',
-            ]);
 
-            $booking = WalkBooking::create([
-                'user_id' => $request->user()->id,
-                'animal_id' => $id,
-                'start' => $validated['start'],
-                'end' => $validated['end'],
-                'booking_date' => now(),
+            $booking = WalkBooking::findOrFail($id);
+
+            if ($booking->user_id == NULL) {
+                $booking->update(['user_id' => auth()->id(),
                 'status' => 'pending',
+                'booking_date' => now(),
                 'approved' => false,
-            ]);
+                'available' => false
+                ]);
+            
+            }else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed booking alredy booked.',
+                ], 500);
+            }
 
             return response()->json([
                 'success' => true,
@@ -85,15 +88,18 @@ class WalkBookingController extends Controller
     /**
      * Cancel a booked termin for an animal.
      */
-    public function cancelTermin(Request $request, $id)
+    public function cancelTermin($id)
     {
         try {
-            $booking = WalkBooking::where('user_id', $request->user()->id)
-                ->where('animal_id', $id)
-                ->where('id', $request->booking_id)
-                ->firstOrFail();
+            $booking = WalkBooking::findOrFail($id);
 
-            $booking->delete();
+            $booking->update([
+                'user_id' => null,
+                'status' => 'pending',
+                'booking_date' => now(),
+                'approved' => false,
+                'available' => true,
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -112,8 +118,6 @@ class WalkBookingController extends Controller
     public function getAnimalPlan($id)
     {
         $plan = WalkBooking::where('animal_id', $id)->get();
-
-
 
         return Inertia::render('Animals/PlanWalks', [
             'plan' => $plan,
@@ -192,5 +196,22 @@ class WalkBookingController extends Controller
         }
     }
     
+    public function deleteBooking($id){
+        try {
+            $booking = WalkBooking::findOrFail($id);
+            $booking->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Booking deleted.',
+                ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while creating the walk plan.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+    }
 
 }
