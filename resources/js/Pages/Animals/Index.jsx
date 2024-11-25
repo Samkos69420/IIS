@@ -86,14 +86,14 @@ export default function Animals({ initialAnimals }) {
             <div className="min-h-screen bg-gray-100">
                 {/* Sticky Navbar */}
                 <header className="flex justify-between items-center p-6">
-                    <Link href="/" className="text-gray-700 px-4 py-2">
+                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
 
                     {/* Navigation Links */}
                     <nav className="flex gap-4">
                         <Link
-                            href="/animals"
+                            href={route('animals.list')}
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/animals")
                                     ? "underline font-bold"
@@ -104,7 +104,7 @@ export default function Animals({ initialAnimals }) {
                         </Link>
                         {userRoles.includes("Vet") && (
                             <><Link
-                                href="/examination"
+                            href={route('examination.index')}
                                 className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                     window.location.pathname.includes("/examination")
                                         ? "underline font-bold"
@@ -114,7 +114,7 @@ export default function Animals({ initialAnimals }) {
                                 Vyšetření
                             </Link>
                             <Link
-                                href="/request"
+                                href={route('requests.index')}
                                 className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                     window.location.pathname.includes("/request")
                                         ? "underline font-bold"
@@ -127,7 +127,7 @@ export default function Animals({ initialAnimals }) {
                         )}
                         {userRoles.includes("CareTaker") && (
                             <><Link
-                                href="/examination"
+                            href={route('examination.index')}
                                 className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                     window.location.pathname.includes("/examination")
                                         ? "underline font-bold"
@@ -137,7 +137,7 @@ export default function Animals({ initialAnimals }) {
                                 Vyšetření
                             </Link>
                             <Link
-                                href="/request"
+                                href={route('requests.index')}
                                 className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                     window.location.pathname.includes("/request")
                                         ? "underline font-bold"
@@ -297,7 +297,7 @@ export default function Animals({ initialAnimals }) {
                                             >
                                                 <td className="border px-4 py-2">
                                                     <Link
-                                                        href={`/animals/${animal.id}/record`}
+                                                        href={route('animals.record', { id: animal.id })}
                                                         className="text-blue-500 underline"
                                                     >
                                                         {animal.name}

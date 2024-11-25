@@ -54,7 +54,7 @@ export default function PlanWalks({ plan, animalId }) {
             <div className="min-h-screen bg-gray-100">
                 {/* Header */}
                 <header className="flex justify-between items-center p-6">
-                    <Link href="/animals" className="text-gray-700 px-4 py-2">
+                    <Link href={route('animals.list')} className="text-gray-700 px-4 py-2">
                         Zpět na seznam zvířat
                     </Link>
                 </header>

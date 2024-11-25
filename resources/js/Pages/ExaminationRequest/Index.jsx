@@ -25,12 +25,12 @@ export default function Requests() {
             <Head title="Žádosti" />
             <div className="min-h-screen bg-gray-100">
                 <header className="flex justify-between items-center p-6">
-                    <Link href="/" className="text-gray-700 px-4 py-2">
+                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
                     <nav className="flex gap-4">
                         <Link
-                            href="/animals"
+                            href={route('animals.list')}
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/animals")
                                     ? "underline font-bold"
@@ -40,7 +40,7 @@ export default function Requests() {
                             Zvířata
                         </Link>
                         <Link
-                            href="/examination"
+                            href={route('examination.index')}
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/examination")
                                     ? "underline font-bold"
@@ -50,7 +50,7 @@ export default function Requests() {
                             Kalendář
                         </Link>
                         <Link
-                            href="/request"
+                            href={route('requests.index')}
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/request")
                                     ? "underline font-bold"
@@ -141,7 +141,7 @@ export default function Requests() {
                                                 <td className="border border-gray-300 px-4 py-2 flex gap-2">
                                                     {!examination ? (
                                                         <Link
-                                                            href={`/examination/create`}
+                                                            href={route('examination.createForm')}
                                                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 transition"
                                                         >
                                                             Naplánovat vyšetření

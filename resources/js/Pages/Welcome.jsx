@@ -18,25 +18,25 @@ export default function Welcome({ auth, animals }) {
             <Head title="Welcome" />
             <div className="min-h-screen bg-gray-100">
                 <header className="flex justify-between items-center p-6">
-                    <Link href="/" className="text-gray-700 px-4 py-2">
+                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
 
                     <nav className="flex gap-4">
-                        <Link href="/animals" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                        <Link href={route('animals.list')} className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                             Zvířata
                         </Link>
                         {userRoles.includes("Volunteer") && (
-                            <Link href="/volunteer/history" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                            <Link href={route('volunteer.history')} className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                 Historie
                             </Link>
                         )}
                         {userRoles.includes("Vet") && (
                             <>
-                            <Link href="/examination" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                            <Link href={route('examination.index')} className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                 Vyšetření
                             </Link>
-                            <Link href="/request" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                            <Link href={route('requests.index')} className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                 Žádosti
                             </Link>
                             </>
@@ -46,10 +46,10 @@ export default function Welcome({ auth, animals }) {
                                 <Link href="/animals/plan" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                     Rozvrh
                                 </Link>
-                                <Link href="/approvevolunteers" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                                <Link href={route('volunteers.approveList')} className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                     Dobrovolníci
                                 </Link>
-                                <Link href="/request" className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
+                                <Link href={route('requests.index')} className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition">
                                     Žádosti
                                 </Link>
                             </>
@@ -112,7 +112,7 @@ export default function Welcome({ auth, animals }) {
                         ))}
                     </div>
                     <div className="mt-6 text-center">
-                        <Link href="/animals" className="px-6 py-2 bg-gray-800 text-white rounded shadow hover:bg-gray-700 transition">
+                        <Link href={route('animals.list')} className="px-6 py-2 bg-gray-800 text-white rounded shadow hover:bg-gray-700 transition">
                             Více
                         </Link>
                     </div>

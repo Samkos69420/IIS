@@ -56,7 +56,7 @@ class WalkBookingController extends Controller
 
             $booking = WalkBooking::findOrFail($id);
 
-            if ($booking->user_id == NULL) {
+            if ($booking->user_id == NULL && $booking->available == true) {
                 $booking->update(['user_id' => auth()->id(),
                 'status' => 'pending',
                 'booking_date' => now(),
@@ -88,18 +88,29 @@ class WalkBookingController extends Controller
     /**
      * Cancel a booked termin for an animal.
      */
-    public function cancelTermin($id)
+    public function cancelTermin(Request $request, $id)
     {
         try {
             $booking = WalkBooking::findOrFail($id);
 
-            $booking->update([
-                'user_id' => null,
-                'status' => 'pending',
-                'booking_date' => now(),
-                'approved' => false,
-                'available' => true,
-            ]);
+            if(request()->user()->id == $booking->user_id) {
+            
+                $booking->update([
+                    'user_id' => null,
+                    'status' => 'pending',
+                    'booking_date' => now(),
+                    'approved' => false,
+                    'available' => true,
+                ]);
+            
+            
+            }else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You cant cancel others bookings',
+                ],);
+            }
+
 
             return response()->json([
                 'success' => true,

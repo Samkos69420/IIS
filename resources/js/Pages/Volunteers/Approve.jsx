@@ -38,11 +38,11 @@ export default function Approve({ volunteers }) {
             <Head title="Approve Volunteers" />
             <div className="min-h-screen bg-gray-100">
                 <header className="flex justify-between items-center p-6">
-                    <Link href="/" className="text-gray-700 px-4 py-2">
+                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
                     <Link
-                        href="/animals"
+                        href={route('animals.list')}
                         className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition"
                     >
                         Zpět na seznam

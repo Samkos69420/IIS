@@ -25,12 +25,12 @@ export default function VolunteerHistory() {
             <div className="min-h-screen bg-gray-100">
                 {/* Sticky Navbar */}
                 <header className="flex justify-between items-center p-6">
-                    <Link href="/" className="text-gray-700 px-4 py-2">
+                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
                     <nav className="flex gap-4">
                     <Link
-                        href="/animals"
+                        href={route('animals.list')}
                         className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                             window.location.pathname.includes('/animals') ? 'underline font-bold' : ''
                         }`}
@@ -38,7 +38,7 @@ export default function VolunteerHistory() {
                         Zvířata
                     </Link>
                     <Link
-                        href="/volunteer/history"
+                        href={route('volunteer.history')}
                         className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                             window.location.pathname.includes('/volunteer/history') ? 'underline font-bold' : ''
                         }`}
