@@ -11,16 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('walk_bookings', function (Blueprint $table) {
+        Schema::create('walk_plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('animal_id')->constrained('animals')->cascadeOnDelete();
             $table->dateTime('start');
             $table->dateTime('end');
-            $table->enum('status', ['pending','rejected','accepted'])->default('pending');
-            $table->dateTime('booking_date');
             $table->boolean('available')->default(true);
-            $table->boolean('approved')->default(false);
             $table->timestamps();
         });
     }
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('walk_bookings');
+        Schema::dropIfExists('walk_plans');
     }
 };

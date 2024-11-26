@@ -10,12 +10,12 @@ export default function AnimalRecords({ animal, records }) {
             <div className="min-h-screen bg-gray-100">
                 {/* Header */}
                 <header className="flex justify-between items-center p-6">
-                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
+                    <Link href="/" className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
                     <nav className="flex gap-4">
                         <Link
-                            href={route('animals.list')}
+                            href="/animals"
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/animals")
                                     ? "underline font-bold"
@@ -25,7 +25,7 @@ export default function AnimalRecords({ animal, records }) {
                             Zvířata
                         </Link>
                         <Link
-                            href={route('examination.index')}
+                            href="/examination"
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/examination")
                                     ? "underline font-bold"
@@ -35,7 +35,7 @@ export default function AnimalRecords({ animal, records }) {
                             Kalendář
                         </Link>
                         <Link
-                            href={route('requests.index')}
+                            href="/request"
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/request")
                                     ? "underline font-bold"
@@ -185,7 +185,7 @@ export default function AnimalRecords({ animal, records }) {
                     {/* Add Record Button */}
                     <div className="flex justify-end mt-4">
                         <Link
-                            href={route('records.createForm', { id: animal.id })}
+                            href={`/animals/${animal.id}/record/create`}
                             className="bg-blue-600 text-white px-4 py-2 rounded-full shadow hover:bg-blue-500 transition"
                         >
                             +

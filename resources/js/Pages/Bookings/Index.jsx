@@ -1,39 +1,28 @@
 import { useState } from "react";
 import { Link, Head } from "@inertiajs/react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import axios from "axios";
 
-export default function Index({auth, examinations }) {
+export default function Index({ auth, bookings }) {
     const [errorMessage, setErrorMessage] = useState("");
 
-    // Map examinations into FullCalendar events
-    const events = examinations.map((exam) => {
-        const animalName = exam.examination_request?.animal?.name || "Neznámé zvíře";
-        const description = exam.examination_request?.description;
-    
-        return {
-            id: exam.id,
-            title: `${animalName} (${description || "Bez popisu"})`,
-            start: exam.examination,
-            allDay: true,
-            extendedProps: {
-                animal: animalName,
-                description: description,
-            },
-        };
-    });
-    
-    
+    const handleBookingClick = (animalId) => {
+        window.location.href = `/animals/${animalId}/booking`;
+    };
+
+    // Filter out bookings with an undefined or null user
+    const filteredBookings = bookings.filter(
+        (booking) => booking.user?.name
+    );
+
     return (
         <>
-            <Head title="Vyšetření" />
+            <Head title="Bookings" />
             <div className="min-h-screen bg-gray-100">
+                {/* Header */}
                 <header className="flex justify-between items-center p-6">
                     <Link href="/" className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
+                    
                     <nav className="flex gap-4">
                         <Link
                             href="/animals"
@@ -46,26 +35,28 @@ export default function Index({auth, examinations }) {
                             Zvířata
                         </Link>
                         <Link
-                            href="/examination"
+                            href="/approvevolunteers"
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
-                                window.location.pathname.includes("/examination")
+                                window.location.pathname.includes("/approvevolunteers")
                                     ? "underline font-bold"
                                     : ""
                             }`}
                         >
-                            Kalendář
+                            Dobrovolníci 
                         </Link>
                         <Link
-                            href="/request"
+                            href="/booking"
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
-                                window.location.pathname.includes("/request")
+                                window.location.pathname.includes("/booking")
                                     ? "underline font-bold"
                                     : ""
                             }`}
                         >
-                            Vyšetření
+                            Rezervace
                         </Link>
                     </nav>
+
+                    {/* User Info */}
                     <div>
                         {auth?.user ? (
                             <Link
@@ -93,8 +84,9 @@ export default function Index({auth, examinations }) {
                     </div>
                 </header>
 
-                <main className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
-                    <h1 className="text-2xl font-bold mb-6">Vyšetření</h1>
+                {/* Main Content */}
+                <main className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
+                    <h2 className="text-2xl font-bold mb-6">Čekající rezervace</h2>
 
                     {errorMessage && (
                         <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
@@ -102,17 +94,32 @@ export default function Index({auth, examinations }) {
                         </div>
                     )}
 
-                    {/* Calendar */}
-                    <FullCalendar
-                        plugins={[dayGridPlugin, interactionPlugin]}
-                        initialView="dayGridMonth"
-                        events={events}
-                        headerToolbar={{
-                            left: "prev,next today",
-                            center: "title",
-                            right: "dayGridMonth",
-                        }}
-                    />
+                    {filteredBookings.length > 0 ? (
+                        <ul className="divide-y divide-gray-300">
+                            {filteredBookings.map((booking) => (
+                                <li
+                                    key={booking.id}
+                                    className="flex items-center justify-between p-4 hover:bg-gray-100 cursor-pointer transition"
+                                    onClick={() => handleBookingClick(booking.animal.id)}
+                                >
+                                    <div>
+                                        <p className="font-semibold text-lg">
+                                            {booking.animal.name || "Neznámé zvíře"}
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                            Dobu rezervace: {new Date(booking.start).toLocaleString()} -{" "}
+                                            {new Date(booking.end).toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <span className="text-gray-600">
+                                        Rezervace od uživatele: {booking.user.name}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-center text-gray-500">Žádné čekající rezervace k zobrazení.</p>
+                    )}
                 </main>
             </div>
         </>

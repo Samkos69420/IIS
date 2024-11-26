@@ -16,7 +16,7 @@ export default function Edit({ user }) {
                 window.location.href = "/users";
             },
             onError: () => {
-                alert("Nastala chyba při úpravě uživatele.");đ
+                alert("Nastala chyba při úpravě uživatele.");
             },
         });
     };
@@ -26,11 +26,11 @@ export default function Edit({ user }) {
             <Head title={`Editace uživatele: ${user.name}`} />
             <div className="min-h-screen bg-gray-100">
                 <header className="flex justify-between items-center p-6">
-                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
+                    <Link href="/" className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
                     <Link
-                        href={route('users.list')}
+                        href="/users"
                         className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition"
                     >
                         Zpět na seznam uživatelů
@@ -103,7 +103,7 @@ export default function Edit({ user }) {
                         {/* Submit Button */}
                         <div className="flex justify-end gap-4">
                             <Link
-                                href={route('users.list')}
+                                href="/users"
                                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow hover:bg-gray-400 transition"
                             >
                                 Zrušit

@@ -70,15 +70,29 @@ export default function Animals({ initialAnimals }) {
         window.location.href = `/animals/${animalId}/planWalks`;
     };
 
-    const handleBorrowClick = (animalId) => {
+    const handleBorrowClick = async (animalId) => {
         if (userRoles.includes("Volunteer")) {
             window.location.href = `/animals/${animalId}/schedule-volunteer`;
-        } else if (userRoles.includes("pendingVolunteer")) {
-            window.location.href = "/apply";
+        } else if (auth.user) {
+            try {
+                const response = await axios.post("/apply");
+    
+                if (response.data.success) {
+                    alert(response.data.message);
+                } else {
+                    alert(response.data.message); // Shows a message if already pending or can't apply
+                }
+            } catch (error) {
+                alert(
+                    error.response?.data?.message ||
+                    "An error occurred while applying for approval."
+                );
+            }
         } else {
             window.location.href = "/register";
         }
     };
+    
 
     return (
         <>
@@ -86,14 +100,14 @@ export default function Animals({ initialAnimals }) {
             <div className="min-h-screen bg-gray-100">
                 {/* Sticky Navbar */}
                 <header className="flex justify-between items-center p-6">
-                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
+                    <Link href="/" className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
 
                     {/* Navigation Links */}
                     <nav className="flex gap-4">
                         <Link
-                            href={route('animals.list')}
+                            href="/animals"
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/animals")
                                     ? "underline font-bold"
@@ -103,50 +117,64 @@ export default function Animals({ initialAnimals }) {
                             Zvířata
                         </Link>
                         {userRoles.includes("Vet") && (
-                            <><Link
-                            href={route('examination.index')}
+                            <>
+                            <Link
+                                href="/examination"
                                 className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                     window.location.pathname.includes("/examination")
                                         ? "underline font-bold"
                                         : ""
                                 }`}
                             >
-                                Vyšetření
+                                Kalendář
                             </Link>
                             <Link
-                                href={route('requests.index')}
+                                href="/request"
                                 className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                     window.location.pathname.includes("/request")
                                         ? "underline font-bold"
                                         : ""
                                 }`}
                             >
-                                Žádosti
+                                Vyšetření
                             </Link>
                             </>
                         )}
+                        {userRoles.includes("Volunteer") && (
+                        <Link
+                            href="/volunteer/history"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/volunteer/history")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Historie
+                        </Link>
+                        )}
                         {userRoles.includes("CareTaker") && (
-                            <><Link
-                            href={route('examination.index')}
-                                className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
-                                    window.location.pathname.includes("/examination")
-                                        ? "underline font-bold"
-                                        : ""
-                                }`}
-                            >
-                                Vyšetření
-                            </Link>
-                            <Link
-                                href={route('requests.index')}
-                                className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
-                                    window.location.pathname.includes("/request")
-                                        ? "underline font-bold"
-                                        : ""
-                                }`}
-                            >
-                                Žádosti
-                            </Link>
-                            </>
+                        <>
+                        <Link
+                            href="/approvevolunteers"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/approvevolunteers")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Dobrovolníci 
+                        </Link>
+                        <Link
+                            href="/booking"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/booking")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Rezervace
+                        </Link>
+                        </>                            
                         )}
                     </nav>
 
@@ -297,7 +325,7 @@ export default function Animals({ initialAnimals }) {
                                             >
                                                 <td className="border px-4 py-2">
                                                     <Link
-                                                        href={route('animals.record', { id: animal.id })}
+                                                        href={`/animals/${animal.id}/record`}
                                                         className="text-blue-500 underline"
                                                     >
                                                         {animal.name}
@@ -415,14 +443,14 @@ export default function Animals({ initialAnimals }) {
                                         <strong>Popis:</strong>{" "}
                                         {selectedAnimal.description || "Není k dispozici"}
                                     </p>
-                                    <button
-                                        onClick={() =>
-                                            handleBorrowClick(selectedAnimal.id)
-                                        }
-                                        className="mt-4 px-6 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-500 transition"
-                                    >
-                                        Zapůjčit
-                                    </button>
+                                    {!(userRoles.includes("CareTaker") || userRoles.includes("Vet") || userRoles.includes("Admin")) && (
+                                        <button
+                                            onClick={() => handleBorrowClick(selectedAnimal.id)}
+                                            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-500 transition"
+                                        >
+                                            Zapůjčit
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

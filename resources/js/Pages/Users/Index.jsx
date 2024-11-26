@@ -42,10 +42,10 @@ export default function UsersIndex({ users, roleFilter }) {
             <div className="min-h-screen bg-gray-100">
                 {/* Header */}
                 <header className="flex justify-between items-center p-6">
-                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
+                    <Link href="/" className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
-                    <Link href={route('users.list')} className="text-gray-700 px-4 py-2">
+                    <Link href="/users" className="text-gray-700 px-4 py-2">
                         Všichni uživatelé
                     </Link>
                 </header>
@@ -84,7 +84,7 @@ export default function UsersIndex({ users, roleFilter }) {
                                         <tr key={user.id} className="hover:bg-gray-100 transition">
                                             <td className="border px-4 py-2">
                                                 <Link
-                                                    href={route('users.edit', { id: user.id })}
+                                                    href={`/users/${user.id}/edit`}
                                                     className="text-blue-500 underline"
                                                 >
                                                     {user.name}

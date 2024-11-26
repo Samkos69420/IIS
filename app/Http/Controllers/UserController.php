@@ -220,7 +220,7 @@ class UserController extends Controller
                 ], 400);
             }
 
-            $volunteer->delete();
+            $volunteer->syncRoles(['']);
 
             return response()->json([
                 'success' => true,
@@ -237,14 +237,36 @@ class UserController extends Controller
 
     public function applyForApproval(Request $request)
     {
-        // Check if the user has any roles
-        if (!$request->user()->hasAnyRole()) {
-            // Assign the role 'pendingVolunteer' to the user
-            $request->user()->assignRole('pendingVolunteer');
+        try {
+            // Check if the user has any roles
+            if ($request->user()->hasRole('pendingVolunteer')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are already pending approval.',
+                ], 400);
+            }
     
-            return redirect()->route('animals.list')->with('success', 'You applyed successfully!');
+            if (!$request->user()->hasAnyRole()) {
+                // Assign the role 'pendingVolunteer' to the user
+                $request->user()->assignRole('pendingVolunteer');
+    
+                return response()->json([
+                    'success' => true,
+                    'message' => 'You applied successfully!',
+                ]);
+            }
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot apply!',
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your request.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-    
-        return redirect()->route('animals.list')->with('error', 'You cant apply!');
     }
+    
 }

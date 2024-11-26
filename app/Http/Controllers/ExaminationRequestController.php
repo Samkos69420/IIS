@@ -20,7 +20,6 @@ class ExaminationRequestController extends Controller
         $examination_requests = examination_request::with(['examination', 'animal', 'vet'])
             ->latest()
             ->paginate(10);
-        \Log::info('Examination Requests:', $examination_requests->toArray());
 
         // Pass data to Inertia::render view
         return Inertia::render('ExaminationRequest/Index', [
@@ -135,8 +134,30 @@ class ExaminationRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(examination_request $examination_request)
-    {
-        
+/**
+ * Remove the specified resource from storage.
+ */
+public function destroy($id)
+{
+    try {
+        // Delete related examination if it exists
+        $examination_request = examination_request::findOrFail($id);
+        // Delete the examination request
+        $examination_request->delete();
+
+        // Return success response
+        return response()->json([
+            'success' => true,
+            'message' => 'Examination request and related examination deleted successfully.',
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while deleting the examination request.',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
+
+    
 }

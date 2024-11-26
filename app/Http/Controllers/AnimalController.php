@@ -14,9 +14,9 @@ class AnimalController extends Controller
      */
     public function index()
     {
-        $animals = Animal::latest()->paginate(10); // Paginate animals
+        $animals = Animal::all(); // Paginate animals
         return Inertia::render('Animals/Index', [
-            'initialAnimals' => $animals->items(),
+            'initialAnimals' => $animals,
         ]);
     }
 

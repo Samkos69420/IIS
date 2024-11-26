@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, Head } from "@inertiajs/react";
 import axios from "axios";
 
-export default function Approve({ volunteers }) {
+export default function Approve({auth, volunteers }) {
     const [pendingVolunteers, setPendingVolunteers] = useState(volunteers);
 
     const handleApprove = async (id) => {
@@ -38,15 +38,70 @@ export default function Approve({ volunteers }) {
             <Head title="Approve Volunteers" />
             <div className="min-h-screen bg-gray-100">
                 <header className="flex justify-between items-center p-6">
-                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
+                    <Link href="/" className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
-                    <Link
-                        href={route('animals.list')}
-                        className="text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition"
-                    >
-                        Zpět na seznam
-                    </Link>
+                    
+                    <nav className="flex gap-4">
+
+                        <Link
+                            href="/animals"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/animals")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Zvířata
+                        </Link>
+                        <Link
+                            href="/approvevolunteers"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/approvevolunteers")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Dobrovolníci 
+                        </Link>
+                        <Link
+                            href="/booking"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/booking")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Rezervace
+                        </Link>
+                    </nav>
+
+                    {/* User Info */}
+                    <div>
+                        {auth?.user ? (
+                            <Link
+                                href={route("profile.edit")}
+                                className="font-semibold text-gray-600 hover:text-gray-900"
+                            >
+                                {auth.user.name}
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href={route("login")}
+                                    className="font-semibold text-gray-600 hover:text-gray-900"
+                                >
+                                    Přihlášení
+                                </Link>
+                                <Link
+                                    href={route("register")}
+                                    className="ml-4 font-semibold text-gray-600 hover:text-gray-900"
+                                >
+                                    Registrace
+                                </Link>
+                            </>
+                        )}
+                    </div>
                 </header>
 
                 <main className="max-w-6xl mx-auto bg-white shadow rounded-lg p-6">

@@ -20,17 +20,34 @@ export default function Requests() {
         }
     };
 
+    const handleDeleteExaminationRequest = async (requestId) => {
+        if (!confirm("Opravdu chcete odstranit tuto žádost a přidružené vyšetření?")) return;
+    
+        try {
+            const response = await axios.post(`/request/${requestId}/destroy`);
+    
+            if (response.data.success) {
+                alert(response.data.message);
+                window.location.reload(); // Reload to reflect changes
+            }
+        } catch (error) {
+            console.error("Chyba při mazání žádosti:", error);
+            alert("Nastala chyba při mazání žádosti.");
+        }
+    };
+    
+
     return (
         <>
             <Head title="Žádosti" />
             <div className="min-h-screen bg-gray-100">
                 <header className="flex justify-between items-center p-6">
-                    <Link href={route('home')} className="text-gray-700 px-4 py-2">
+                    <Link href="/" className="text-gray-700 px-4 py-2">
                         Zvířecí útulek
                     </Link>
                     <nav className="flex gap-4">
                         <Link
-                            href={route('animals.list')}
+                            href="/animals"
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/animals")
                                     ? "underline font-bold"
@@ -40,7 +57,7 @@ export default function Requests() {
                             Zvířata
                         </Link>
                         <Link
-                            href={route('examination.index')}
+                            href="/examination"
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/examination")
                                     ? "underline font-bold"
@@ -50,7 +67,7 @@ export default function Requests() {
                             Kalendář
                         </Link>
                         <Link
-                            href={route('requests.index')}
+                            href="/request"
                             className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
                                 window.location.pathname.includes("/request")
                                     ? "underline font-bold"
@@ -141,7 +158,7 @@ export default function Requests() {
                                                 <td className="border border-gray-300 px-4 py-2 flex gap-2">
                                                     {!examination ? (
                                                         <Link
-                                                            href={route('examination.createForm')}
+                                                            href={`/examination/create`}
                                                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 transition"
                                                         >
                                                             Naplánovat vyšetření
@@ -161,12 +178,12 @@ export default function Requests() {
                                                             <button
                                                                 onClick={() =>
                                                                     handleDeleteExaminationRequest(
-                                                                        //TODO
+                                                                        request.id
                                                                     )
                                                                 }
                                                                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-400 transition"
                                                             >
-                                                                Odstranit vyšetření i žádost
+                                                                Odstranit žádost
                                                             </button>
                                                         </>
                                                     )}

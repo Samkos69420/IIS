@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, Head } from "@inertiajs/react";
 import axios from "axios";
 
-export default function Create() {
+export default function Create({auth}) {
     const [formData, setFormData] = useState({
         name: "",
         breed: "",
@@ -15,6 +15,8 @@ export default function Create() {
         where_found: "",
         photo_url: null,
     });
+
+    const userRoles = auth?.user?.roles || [];
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
@@ -64,10 +66,71 @@ export default function Create() {
         <>
             <Head title="Přidat zvíře" />
             <div className="min-h-screen bg-gray-100">
-                <header className="flex justify-between items-center p-6">
-                    <Link href={route('animals.list')} className="text-gray-700 px-4 py-2">
-                        Zpět na seznam zvířat
+            <header className="flex justify-between items-center p-6">
+                    <Link href="/" className="text-gray-700 px-4 py-2">
+                        Zvířecí útulek
                     </Link>
+
+                    {/* Navigation Links */}
+                    <nav className="flex gap-4">
+                    <Link
+                            href="/animals"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/animals")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Zvířata
+                        </Link>
+                        <Link
+                            href="/approvevolunteers"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/approvevolunteers")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Dobrovolníci 
+                        </Link>
+                        <Link
+                            href="/booking"
+                            className={`text-gray-700 hover:bg-gray-200 px-4 py-2 rounded transition ${
+                                window.location.pathname.includes("/booking")
+                                    ? "underline font-bold"
+                                    : ""
+                            }`}
+                        >
+                            Rezervace
+                        </Link>
+                    </nav>
+
+                    {/* User Info */}
+                    <div>
+                        {auth?.user ? (
+                            <Link
+                                href={route("profile.edit")}
+                                className="font-semibold text-gray-600 hover:text-gray-900"
+                            >
+                                {auth.user.name}
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href={route("login")}
+                                    className="font-semibold text-gray-600 hover:text-gray-900"
+                                >
+                                    Přihlášení
+                                </Link>
+                                <Link
+                                    href={route("register")}
+                                    className="ml-4 font-semibold text-gray-600 hover:text-gray-900"
+                                >
+                                    Registrace
+                                </Link>
+                            </>
+                        )}
+                    </div>
                 </header>
 
                 <main className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
@@ -234,7 +297,7 @@ export default function Create() {
                         {/* Buttons */}
                         <div className="flex justify-end gap-4">
                             <Link
-                                href={route('animals.list')}
+                                href="/animals"
                                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow hover:bg-gray-400"
                             >
                                 Zrušit

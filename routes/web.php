@@ -63,6 +63,7 @@ Route::middleware(['auth', 'role:Vet|Admin'])->group(function () {
     Route::get('/request/{id}', [ExaminationRequestController::class, 'RequestDetail'])->where('id', '[0-9]+')->name('requests.detail');
     Route::get('/request/{id}/edit', [ExaminationRequestController::class, 'geteditRequest'])->where('id', '[0-9]+')->name('requests.editForm');
     Route::post('/request/{id}/edit', [ExaminationRequestController::class, 'editRequest'])->where('id', '[0-9]+')->name('requests.update');
+    Route::post('/request/{id}/destroy', [ExaminationRequestController::class, 'destroy'])->where('id', '[0-9]+')->name('requests.destroy');
 
     Route::get('/examination', [ExaminationController::class, 'IndexExamination'])->name('examination.index');
     Route::get('/examination/{id}', [ExaminationController::class, 'DetailExamination'])->where('id', '[0-9]+')->name('examination.detail');
